@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Community Research | HydrogenHub</title>
+    <link rel="stylesheet" href="index.css">
+    <style>
+        @keyframes slideInDown {
+            from { opacity: 0; transform: translateY(-30px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        .gallery-header {
+            text-align: center;
+            padding: 8rem 2rem 2rem 2rem;
+        }
+        .gallery-header h1 {
+            font-size: 3rem;
+            margin-bottom: 1rem;
+            background: linear-gradient(135deg, #fff, var(--accent-cyan));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            animation: slideInDown 0.8s ease-out forwards;
+        }
+        .gallery-header p {
+            color: var(--text-secondary);
+            max-width: 600px;
+            margin: 0 auto;
+        }
+        .search-bar {
+            max-width: 500px;
+            margin: 2rem auto;
+            display: flex;
+            gap: 1rem;
+        }
+    </style>
+</head>
+<body class="theme-dark">
+
+    <div class="bg-gradient"></div>
+
+    <nav class="navbar">
+        <div class="nav-container">
+            <a href="index.html" class="logo">Hydro<span>Hub</span></a>
+            <ul class="nav-links">
+                <li><a href="index.html">Home</a></li>
+                <li><a href="info.html">Global Info</a></li>
+                <li><a href="index.html#news">News</a></li>
+                <li><a href="info.html#simlab">SimLab 🧪</a></li>
+                <li><a href="community-research.html" style="color: var(--accent-cyan); font-weight: bold;">Community Research</a></li>
+                <li><a href="index.html#about">About</a></li>
+                <li><a href="index.html#contact">Contact</a></li>
+                <li id="nav-auth-item"><a href="#" id="nav-login-btn" style="color: var(--accent-cyan); font-weight: bold;">Login / Sign Up</a></li>
+            </ul>
+        </div>
+    </nav>
+
+    <header class="gallery-header">
+        <h1>Community <span>Research</span></h1>
+        <p style="margin-bottom: 2rem;">Explore the latest papers, abstracts, and findings uploaded by the HydrogenHub community.</p>
+        <a href="upload.html" class="btn btn-primary" style="font-size: 1.1rem; padding: 0.8rem 2rem;">Submit Your Research</a>
+    </header>
+
+    <main class="container">
+        <div id="community-gallery-container" class="research-grid">
+            <p style="text-align:center; width:100%; color:var(--text-secondary);">Loading community research...</p>
+        </div>
+    </main>
+
+    <footer class="footer">
+        <p>&copy; 2026 HydrogenHub. Empowering a clean energy future.</p>
+    </footer>
+
+    <!-- Inject Auth Modal logic so the navbar works correctly -->
+    <script type="module" src="auth.js?v=2"></script>
+    <script type="module" src="gallery.js"></script>
+</body>
+</html>
+

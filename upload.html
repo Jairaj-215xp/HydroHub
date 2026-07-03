@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>HydrogenHub | Submit Research</title>
+    
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500&family=Outfit:wght@400;600;700;800&display=swap" rel="stylesheet">
+    
+    <!-- CSS -->
+    <link rel="stylesheet" href="index.css">
+</head>
+<body>
+    <!-- Background Elements -->
+    <div class="bg-gradient"></div>
+    <div class="glow-orb orb-1"></div>
+    <div class="glow-orb orb-2"></div>
+
+    <nav class="navbar">
+        <div class="nav-container">
+            <a href="index.html" class="logo">Hydro<span>Hub</span></a>
+            <ul class="nav-links">
+                <li><a href="index.html">Home</a></li>
+                <li><a href="info.html">Global Info</a></li>
+                <li><a href="index.html#news">News</a></li>
+                <li><a href="info.html#simlab">SimLab 🧪</a></li>
+                <li><a href="community-research.html">Community Research</a></li>
+                <li><a href="index.html#about">About</a></li>
+                <li><a href="index.html#contact">Contact</a></li>
+                <li id="nav-auth-item"><a href="#" id="nav-login-btn" style="color: var(--accent-cyan); font-weight: bold;">Login / Sign Up</a></li>
+            </ul>
+        </div>
+    </nav>
+
+    <main>
+        <div class="upload-container">
+            <div class="upload-header">
+                <h2>Upload <span>Research</span></h2>
+                <p>Contribute to the HydrogenHub community by sharing your papers, datasets, and findings.</p>
+            </div>
+
+            <div class="glass-card">
+                <div class="auth-form-group">
+                    <label>Research Title</label>
+                    <input type="text" id="upload-title" class="glass-input" placeholder="e.g. Advanced PEM Fuel Cell Efficiency">
+                </div>
+
+                <div class="auth-form-group">
+                    <label>Authors / Institution</label>
+                    <input type="text" id="upload-authors" class="glass-input" placeholder="e.g. Dr. Jane Doe, MIT">
+                </div>
+
+                <div class="auth-form-group">
+                    <label>Abstract / Description</label>
+                    <textarea id="upload-desc" class="glass-input" rows="4" placeholder="Brief summary of the research..."></textarea>
+                </div>
+
+                <div class="upload-zone" id="upload-zone">
+                    <input type="file" id="file-input" accept=".pdf,.doc,.docx,.zip">
+                    <h3>Drag & Drop File Here</h3>
+                    <p>or click to browse (.pdf, .doc, .zip)</p>
+                    <div class="file-name-display" id="file-name"></div>
+                </div>
+
+                <p id="upload-error" class="error-text" style="color: #ff6666; font-size: 0.9rem; display: none; margin-bottom: 1rem;"></p>
+                <p id="upload-success" style="color: var(--accent-green); font-size: 0.9rem; display: none; margin-bottom: 1rem;"></p>
+
+                <button id="btn-submit-upload" class="btn btn-primary" style="width: 100%;">Submit Research</button>
+            </div>
+        </div>
+    </main>
+
+    <script type="module" src="firebase-config.js"></script>
+    <script type="module" src="auth.js?v=2"></script>
+    <script type="module" src="upload.js"></script>
+</body>
+</html>
+

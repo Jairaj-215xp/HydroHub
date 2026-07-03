@@ -1,0 +1,17 @@
+# Firebase local config
+env.js
+
+# Dependencies
+node_modules/
+
+# Mac OS
+.DS_Store
+
+# Editor directories and files
+.idea
+.vscode
+*.suo
+*.ntvs*
+*.njsproj
+*.sln
+*.sw?

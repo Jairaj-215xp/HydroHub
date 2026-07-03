@@ -1,0 +1,1007 @@
+/* --- Info Page Specific CSS --- */
+
+.sim-container {
+    padding: 2rem;
+    margin: 2rem auto;
+    max-width: 1000px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    border: 1px solid rgba(0, 240, 255, 0.1);
+}
+
+.sim-controls {
+    width: 100%;
+    margin-bottom: 2rem;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 1rem;
+    color: var(--text-primary);
+}
+
+input[type=range] {
+    -webkit-appearance: none;
+    width: 300px;
+    background: transparent;
+}
+
+input[type=range]::-webkit-slider-thumb {
+    -webkit-appearance: none;
+    height: 20px;
+    width: 20px;
+    border-radius: 50%;
+    background: var(--accent-cyan);
+    cursor: pointer;
+    margin-top: -8px;
+    box-shadow: 0 0 10px rgba(0, 240, 255, 0.5);
+}
+
+input[type=range]::-webkit-slider-runnable-track {
+    width: 100%;
+    height: 4px;
+    cursor: pointer;
+    background: rgba(255, 255, 255, 0.2);
+    border-radius: 2px;
+}
+
+#molecule-canvas {
+    width: 100%;
+    max-width: 800px;
+    height: 400px;
+    background: rgba(0, 0, 0, 0.5);
+    border-radius: 12px;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    box-shadow: inset 0 0 20px rgba(0,0,0,0.8);
+}
+
+/* --- Electrolysis Sim --- */
+.electrolysis-container {
+    width: 100%;
+    max-width: 600px;
+    height: 300px;
+    margin: 0 auto;
+    position: relative;
+    display: flex;
+    justify-content: center;
+}
+
+.water-tank {
+    width: 80%;
+    height: 100%;
+    background: linear-gradient(180deg, rgba(0, 150, 255, 0.1) 0%, rgba(0, 150, 255, 0.3) 100%);
+    border: 3px solid rgba(255,255,255,0.2);
+    border-top: none;
+    border-bottom-left-radius: 20px;
+    border-bottom-right-radius: 20px;
+    position: relative;
+    display: flex;
+    justify-content: space-around;
+    align-items: flex-end;
+    padding-bottom: 20px;
+}
+
+.water-tank::before {
+    content: '';
+    position: absolute;
+    top: -3px;
+    left: -3px;
+    right: -3px;
+    height: 3px;
+    background: rgba(255,255,255,0.4);
+}
+
+.electrode {
+    width: 40px;
+    height: 200px;
+    position: relative;
+    border-radius: 4px;
+}
+
+.anode {
+    background: linear-gradient(90deg, #444, #666);
+    border: 1px solid #888;
+}
+
+.cathode {
+    background: linear-gradient(90deg, #333, #555);
+    border: 1px solid #777;
+}
+
+.electrode-label {
+    position: absolute;
+    top: -40px;
+    left: 50%;
+    transform: translateX(-50%);
+    text-align: center;
+    color: var(--text-primary);
+    font-weight: bold;
+    width: 100px;
+}
+
+.electrode-label small {
+    color: var(--text-secondary);
+    font-weight: normal;
+}
+
+.bubbles-container {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    overflow: hidden;
+}
+
+.bubble {
+    position: absolute;
+    bottom: 0;
+    background: rgba(255, 255, 255, 0.8);
+    border-radius: 50%;
+    animation: rise infinite linear;
+}
+
+.anode .bubble {
+    background: rgba(255, 100, 100, 0.8);
+    box-shadow: 0 0 5px rgba(255, 100, 100, 0.5);
+}
+
+.cathode .bubble {
+    background: rgba(0, 240, 255, 0.8);
+    box-shadow: 0 0 5px rgba(0, 240, 255, 0.5);
+}
+
+@keyframes rise {
+    0% { transform: translateY(0) scale(0.5); opacity: 0; }
+    10% { opacity: 1; }
+    90% { opacity: 1; }
+    100% { transform: translateY(-250px) scale(1.5); opacity: 0; }
+}
+
+/* --- Spectrum 3D Grid --- */
+.spectrum-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    gap: 2rem;
+    max-width: 1200px;
+    margin: 0 auto;
+    perspective: 1000px; /* For 3D effect */
+}
+
+.spectrum-card {
+    background: var(--bg-card);
+    border: var(--glass-border);
+    border-radius: 20px;
+    padding: 2rem;
+    position: relative;
+    transform-style: preserve-3d;
+    transition: transform 0.1s ease;
+    cursor: pointer;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+}
+
+.spectrum-card::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 0; right: 0; bottom: 0;
+    border-radius: 20px;
+    background: inherit;
+    z-index: -1;
+    transform: translateZ(-10px);
+}
+
+.spectrum-card h3 {
+    font-size: 1.8rem;
+    margin-bottom: 1rem;
+    transform: translateZ(30px);
+}
+
+.spectrum-card p {
+    color: var(--text-secondary);
+    transform: translateZ(20px);
+    line-height: 1.5;
+}
+
+.spectrum-card .tag {
+    display: inline-block;
+    padding: 0.3rem 0.8rem;
+    border-radius: 20px;
+    font-size: 0.8rem;
+    font-weight: bold;
+    margin-top: 1rem;
+    transform: translateZ(40px);
+}
+
+/* --- Advanced Electrolysis UI --- */
+.industrial-sim-wrapper {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    width: 100%;
+    height: 400px;
+    padding: 2rem;
+    background: rgba(0,0,0,0.3);
+    border-radius: 12px;
+    box-shadow: inset 0 0 20px rgba(0,0,0,0.8);
+    position: relative;
+    overflow: hidden;
+}
+
+.sim-module {
+    background: rgba(255,255,255,0.05);
+    border: 1px solid rgba(255,255,255,0.1);
+    border-radius: 12px;
+    padding: 1rem;
+    text-align: center;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    z-index: 2;
+}
+
+/* Power Source */
+.power-source {
+    width: 150px;
+    height: 150px;
+}
+.power-icon {
+    width: 60px;
+    height: 60px;
+    color: #ffd700;
+    margin-bottom: 0.5rem;
+    transition: filter 0.3s;
+}
+.power-indicator {
+    font-size: 0.8rem;
+    font-weight: bold;
+    color: var(--text-secondary);
+    background: #333;
+    padding: 2px 8px;
+    border-radius: 10px;
+    margin-top: 0.5rem;
+}
+.power-active .power-icon {
+    filter: drop-shadow(0 0 15px #ffd700);
+}
+.power-active .power-indicator {
+    color: #fff;
+    background: #00cc44;
+    box-shadow: 0 0 10px #00cc44;
+}
+
+/* Connectors / Wires */
+.sim-connector {
+    display: flex;
+    flex-direction: column;
+    justify-content: space-around;
+    height: 100px;
+    flex: 1;
+    position: relative;
+    z-index: 1;
+}
+
+.wire {
+    height: 4px;
+    background: #444;
+    width: 100%;
+    position: relative;
+    overflow: hidden;
+}
+
+.wire::after {
+    content: '';
+    position: absolute;
+    top: 0; left: 0; bottom: 0; right: 0;
+    background: linear-gradient(90deg, transparent, rgba(255,255,255,0.8), transparent);
+    width: 50%;
+    transform: translateX(-100%);
+    opacity: 0;
+}
+
+.power-active .wire::after {
+    animation: flow 1s infinite linear;
+    opacity: 1;
+}
+
+.wire-pos { border-bottom: 2px solid #ff4444; }
+.wire-neg { border-bottom: 2px solid #44ccff; }
+
+/* Electrolyzer Core */
+.electrolyzer-core {
+    width: 300px;
+    height: 300px;
+    padding: 0;
+    background: linear-gradient(180deg, #222, #111);
+    border: 2px solid #555;
+    overflow: hidden;
+}
+.core-header {
+    width: 100%;
+    background: #333;
+    padding: 0.5rem;
+    font-weight: bold;
+    border-bottom: 2px solid #555;
+}
+.core-body {
+    display: flex;
+    width: 100%;
+    height: 100%;
+    position: relative;
+}
+.chamber {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    position: relative;
+    background: rgba(0, 150, 255, 0.1);
+}
+.anode-chamber { border-right: 1px dashed rgba(255,255,255,0.2); }
+.chamber span {
+    margin-top: 10px;
+    font-size: 0.8rem;
+    color: rgba(255,255,255,0.7);
+    z-index: 5;
+}
+.pem-membrane {
+    position: absolute;
+    left: 50%;
+    top: 0;
+    bottom: 0;
+    width: 12px;
+    transform: translateX(-50%);
+    background: repeating-linear-gradient(
+        0deg,
+        rgba(255,255,255,0.1),
+        rgba(255,255,255,0.1) 5px,
+        rgba(255,255,255,0.3) 5px,
+        rgba(255,255,255,0.3) 10px
+    );
+    z-index: 4;
+    display: flex;
+    align-items: center;
+    writing-mode: vertical-rl;
+    font-size: 0.6rem;
+    color: rgba(255,255,255,0.5);
+    text-orientation: mixed;
+}
+.advanced-bubbles {
+    position: absolute;
+    bottom: 0; left: 0; right: 0; top: 0;
+    overflow: hidden;
+}
+.adv-bubble {
+    position: absolute;
+    bottom: -10px;
+    border-radius: 50%;
+    background: rgba(255,255,255,0.6);
+    animation: advRise infinite ease-in;
+}
+.anode-chamber .adv-bubble { background: rgba(255, 100, 100, 0.6); box-shadow: 0 0 5px rgba(255,100,100,0.8); }
+.cathode-chamber .adv-bubble { background: rgba(0, 240, 255, 0.6); box-shadow: 0 0 5px rgba(0,240,255,0.8); }
+
+@keyframes advRise {
+    0% { transform: translateY(0) scale(0.5) translateX(0); opacity: 0; }
+    20% { opacity: 1; }
+    80% { opacity: 1; }
+    100% { transform: translateY(-280px) scale(1.5) translateX(10px); opacity: 0; }
+}
+
+/* Gas Pipes */
+.pipe {
+    height: 12px;
+    background: #333;
+    width: 100%;
+    position: relative;
+    border-top: 2px solid #555;
+    border-bottom: 2px solid #111;
+    overflow: hidden;
+}
+.pipe-o2 { margin-bottom: 20px; }
+.pipe-h2 { margin-top: 20px; }
+.flow-indicator {
+    position: absolute;
+    top: 0; bottom: 0; left: 0;
+    width: 30%;
+    background: linear-gradient(90deg, transparent, rgba(255,255,255,0.5), transparent);
+    transform: translateX(-100%);
+    opacity: 0;
+}
+.power-active .pipe-o2 .flow-indicator { background: linear-gradient(90deg, transparent, rgba(255,100,100,0.5), transparent); animation: flow 1.5s infinite linear; opacity: 1; }
+.power-active .pipe-h2 .flow-indicator { background: linear-gradient(90deg, transparent, rgba(0,240,255,0.5), transparent); animation: flow 0.8s infinite linear; opacity: 1; }
+
+@keyframes flow {
+    0% { transform: translateX(-100%); }
+    100% { transform: translateX(400%); }
+}
+
+/* Storage Tanks */
+.storage-tanks {
+    width: 200px;
+    height: 250px;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    background: transparent;
+    border: none;
+    padding: 0;
+}
+.storage-tank {
+    width: 100%;
+    height: 45%;
+    background: rgba(0,0,0,0.5);
+    border: 2px solid #555;
+    border-radius: 8px;
+    position: relative;
+    overflow: hidden;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+.storage-tank span {
+    z-index: 5;
+    font-size: 0.9rem;
+    font-weight: bold;
+    text-shadow: 0 0 5px rgba(0,0,0,0.8);
+}
+.tank-level {
+    position: absolute;
+    bottom: 0; left: 0; right: 0;
+    height: 0%;
+    transition: height 0.5s ease;
+    z-index: 1;
+}
+.tank-o2 .tank-level { background: rgba(255, 100, 100, 0.4); box-shadow: 0 -5px 15px rgba(255,100,100,0.5); }
+.tank-h2 .tank-level { background: rgba(0, 240, 255, 0.4); box-shadow: 0 -5px 15px rgba(0,240,255,0.5); }
+
+
+/* --- Molecular Electrolysis Canvas --- */
+.molecular-sim-wrapper {
+    position: relative;
+    width: 100%;
+    display: flex;
+    justify-content: center;
+}
+
+.electrode-labels {
+    position: absolute;
+    top: -30px;
+    left: 0;
+    right: 0;
+    display: flex;
+    justify-content: space-between;
+    padding: 0 40px;
+    font-weight: bold;
+    color: var(--text-secondary);
+}
+
+.label-cathode { color: var(--accent-cyan); }
+.label-anode { color: #ff6666; }
+
+#electrolysis-canvas {
+    width: 100%;
+    max-width: 800px;
+    height: 400px;
+    background: radial-gradient(circle at 50% 50%, rgba(0, 100, 200, 0.1), rgba(0,0,0,0.6));
+    border-radius: 12px;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-left: 10px solid #444; /* Cathode visual */
+    border-right: 10px solid #444; /* Anode visual */
+    box-shadow: inset 0 0 30px rgba(0, 0, 0, 0.8);
+    transition: border-color 0.3s, box-shadow 0.3s;
+}
+
+.power-active #electrolysis-canvas {
+    border-left-color: var(--accent-cyan);
+    border-right-color: #ff6666;
+    box-shadow: inset 0 0 30px rgba(0, 0, 0, 0.8), 0 0 20px rgba(0, 240, 255, 0.2);
+}
+
+
+/* --- Production-Grade Fluid Electrolysis Simulation --- */
+.fluid-sim-wrapper {
+    display: flex;
+    justify-content: center;
+    width: 100%;
+    margin-top: 2rem;
+}
+
+.glass-tank {
+    width: 100%;
+    max-width: 600px;
+    height: 400px;
+    background: rgba(255, 255, 255, 0.02);
+    border: 3px solid rgba(255, 255, 255, 0.1);
+    border-radius: 20px;
+    border-top-left-radius: 5px;
+    border-top-right-radius: 5px;
+    box-shadow: inset 0 0 30px rgba(0,0,0,0.8), 0 10px 40px rgba(0, 150, 255, 0.1);
+    position: relative;
+    overflow: hidden;
+}
+
+.gas-zone {
+    position: absolute;
+    top: 0;
+    width: 50%;
+    height: 100%;
+    z-index: 2;
+    transition: background 1s;
+}
+.gas-h2 { left: 0; border-right: 1px dashed rgba(255,255,255,0.1); }
+.gas-o2 { right: 0; }
+
+.gas-label {
+    position: absolute;
+    top: 20px;
+    left: 50%;
+    transform: translateX(-50%);
+    font-weight: bold;
+    font-size: 1.2rem;
+    color: rgba(255,255,255,0.2);
+    transition: color 0.5s;
+}
+
+.fluid-body {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    height: 85%;
+    transition: height 0.5s linear;
+    z-index: 5;
+}
+
+.liquid-bg {
+    position: absolute;
+    top: 15px; /* Offset for waves */
+    bottom: 0;
+    left: 0;
+    right: 0;
+    background: linear-gradient(180deg, rgba(0, 150, 255, 0.6), rgba(0, 50, 150, 0.9));
+    z-index: 5;
+}
+
+/* SVG Waves Animation */
+.wave-container {
+    position: absolute;
+    top: -30px;
+    left: 0;
+    width: 100%;
+    height: 50px;
+    z-index: 6;
+}
+.waves {
+    width: 100%;
+    height: 50px;
+}
+.parallax > use {
+    animation: move-forever 25s cubic-bezier(.55,.5,.45,.5)     infinite;
+}
+.parallax > use:nth-child(1) { animation-delay: -2s; animation-duration: 7s; }
+.parallax > use:nth-child(2) { animation-delay: -3s; animation-duration: 10s; }
+.parallax > use:nth-child(3) { animation-delay: -4s; animation-duration: 13s; }
+.parallax > use:nth-child(4) { animation-delay: -5s; animation-duration: 20s; }
+
+@keyframes move-forever {
+  0% { transform: translate3d(-90px,0,0); }
+  100% { transform: translate3d(85px,0,0); }
+}
+
+/* Electrodes */
+.rod {
+    position: absolute;
+    bottom: 0;
+    width: 30px;
+    height: 60%;
+    background: linear-gradient(90deg, #555, #888, #444);
+    border-radius: 15px 15px 0 0;
+    z-index: 10;
+}
+.cathode-rod { left: 25%; transform: translateX(-50%); }
+.anode-rod { right: 25%; transform: translateX(50%); }
+
+.rod-glow {
+    position: absolute;
+    top: -5px; bottom: 0; left: -5px; right: -5px;
+    border-radius: 20px 20px 0 0;
+    opacity: 0;
+    transition: opacity 0.5s;
+    z-index: 9;
+}
+.cathode-rod .rod-glow { box-shadow: 0 0 30px rgba(0, 240, 255, 0.8), inset 0 0 10px rgba(0, 240, 255, 0.5); }
+.anode-rod .rod-glow { box-shadow: 0 0 30px rgba(255, 100, 100, 0.8), inset 0 0 10px rgba(255, 100, 100, 0.5); }
+
+.rod-label {
+    position: absolute;
+    bottom: -30px;
+    left: 50%;
+    transform: translateX(-50%);
+    font-size: 0.8rem;
+    font-weight: bold;
+    color: rgba(255,255,255,0.5);
+    white-space: nowrap;
+}
+
+/* Active State Enhancements */
+.power-active .gas-h2 .gas-label { color: var(--accent-cyan); text-shadow: 0 0 10px var(--accent-cyan); }
+.power-active .gas-o2 .gas-label { color: #ff6666; text-shadow: 0 0 10px #ff6666; }
+
+.power-active .gas-h2 { background: linear-gradient(180deg, rgba(0, 240, 255, 0.2), transparent); }
+.power-active .gas-o2 { background: linear-gradient(180deg, rgba(255, 100, 100, 0.2), transparent); }
+
+.power-active .rod-glow { opacity: 1; }
+
+/* Fluid Bubbles */
+.effervescence {
+    position: absolute;
+    top: 0; bottom: 0; left: -20px; right: -20px;
+    z-index: 15;
+    pointer-events: none;
+}
+.fluid-bubble {
+    position: absolute;
+    border-radius: 50%;
+    background: rgba(255,255,255,0.8);
+    animation: bubbleRise infinite ease-in;
+}
+.cathode-rod .fluid-bubble { background: rgba(0, 240, 255, 0.9); box-shadow: 0 0 8px rgba(0, 240, 255, 0.8); }
+.anode-rod .fluid-bubble { background: rgba(255, 100, 100, 0.9); box-shadow: 0 0 8px rgba(255, 100, 100, 0.8); }
+
+@keyframes bubbleRise {
+    0% { transform: translateY(0) scale(0.5); opacity: 0; }
+    20% { opacity: 1; }
+    80% { opacity: 1; }
+    100% { transform: translateY(-400px) scale(1.5); opacity: 0; }
+}
+
+
+/* --- The Hydrogen Encyclopedia Layout --- */
+.encyclopedia-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(400px, 1fr));
+    gap: 2rem;
+    margin-top: 2rem;
+}
+
+.encyclo-module {
+    display: flex;
+    flex-direction: column;
+    height: 450px;
+}
+
+.module-info {
+    padding: 1.5rem;
+    border-bottom: 1px solid rgba(255,255,255,0.1);
+    height: 160px;
+}
+.module-info h3 { color: var(--accent-cyan); margin-bottom: 0.5rem; }
+.module-info p { font-size: 0.9rem; color: var(--text-secondary); margin: 0; }
+
+.module-sim {
+    flex: 1;
+    position: relative;
+    padding: 1rem;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    background: rgba(0,0,0,0.3);
+    border-radius: 0 0 16px 16px;
+    overflow: hidden;
+}
+
+.sim-controls-row {
+    display: flex;
+    gap: 0.5rem;
+    flex-wrap: wrap;
+    justify-content: center;
+    margin-top: 1rem;
+    z-index: 10;
+}
+
+/* Module 1: Isotopes */
+.isotope-visual {
+    position: relative;
+    width: 150px;
+    height: 150px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+.electron-orbit {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    border: 1px dashed rgba(0, 240, 255, 0.3);
+    border-radius: 50%;
+    animation: spinOrbit 3s linear infinite;
+}
+.electron {
+    width: 10px;
+    height: 10px;
+    background: #00f0ff;
+    border-radius: 50%;
+    position: absolute;
+    top: -5px;
+    left: 50%;
+    transform: translateX(-50%);
+    box-shadow: 0 0 10px #00f0ff;
+}
+@keyframes spinOrbit { 100% { transform: rotate(360deg); } }
+
+.nucleus {
+    display: flex;
+    gap: 2px;
+    flex-wrap: wrap;
+    justify-content: center;
+    width: 40px;
+}
+.nucleon {
+    width: 16px; height: 16px;
+    border-radius: 50%;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 8px; font-weight: bold; color: #fff;
+    box-shadow: 0 0 5px rgba(0,0,0,0.5);
+}
+.proton { background: #ff4444; }
+.neutron { background: #888888; }
+
+/* Module 2: Energy Density */
+.balance-scale {
+    width: 100%;
+    height: 150px;
+    position: relative;
+    border-bottom: 2px solid #555;
+}
+.scale-beam {
+    position: absolute;
+    top: 50%; left: 10%; right: 10%;
+    height: 4px; background: #fff;
+    transform-origin: center;
+    transition: transform 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+}
+.scale-pan {
+    position: absolute;
+    top: 50%; width: 60px; height: 60px;
+    border-bottom: 2px solid #fff;
+    border-left: 1px solid rgba(255,255,255,0.5);
+    border-right: 1px solid rgba(255,255,255,0.5);
+    display: flex; align-items: flex-end; justify-content: center; flex-wrap: wrap; gap: 2px;
+    transition: transform 0.5s;
+}
+.pan-left { left: 10%; transform: translateX(-50%); }
+.pan-right { right: 10%; transform: translateX(50%); }
+
+.weight {
+    font-size: 0.6rem; font-weight: bold; color: #fff;
+    display: flex; align-items: center; justify-content: center;
+}
+.h2-weight { width: 40px; height: 40px; background: rgba(0,240,255,0.2); border: 1px solid #00f0ff; border-radius: 5px; }
+.gas-weight { width: 15px; height: 20px; background: #ffaa00; border-radius: 3px; }
+.batt-weight { width: 10px; height: 15px; background: #444; border-top: 2px solid #aaa; border-radius: 2px; }
+
+/* Module 3: Fuel Cell */
+.fcev-diagram {
+    display: flex; align-items: center; justify-content: space-between;
+    width: 100%; height: 150px;
+    padding: 0 1rem; position: relative;
+}
+.fcev-input, .fcev-output {
+    font-size: 0.8rem; font-weight: bold; color: var(--text-secondary);
+    display: flex; flex-direction: column; align-items: center; gap: 10px;
+}
+.fcev-core {
+    padding: 1rem; background: rgba(255,255,255,0.05); border: 2px solid #44ccff;
+    border-radius: 8px; font-weight: bold; color: #fff;
+    position: relative; overflow: hidden;
+}
+.fcev-core::after {
+    content: ''; position: absolute; top: 0; bottom: 0; left: -100%; width: 50%;
+    background: linear-gradient(90deg, transparent, rgba(0,240,255,0.4), transparent);
+    transition: left 0s;
+}
+.fcev-active .fcev-core::after { animation: cellFlow 1s infinite linear; }
+@keyframes cellFlow { 100% { left: 200%; } }
+
+.wheel { font-size: 2rem; transition: transform 0s; }
+.fcev-active .wheel { animation: spinWheel 0.5s infinite linear; }
+@keyframes spinWheel { 100% { transform: rotate(360deg); } }
+.exhaust { opacity: 0; transform: translateY(-10px); transition: 0.3s; color: #00f0ff; }
+.fcev-active .exhaust { opacity: 1; transform: translateY(0); animation: drip 1s infinite; }
+@keyframes drip { 50% { transform: translateY(5px); } }
+
+/* Module 4: Storage */
+.storage-tank-visual {
+    width: 100px; height: 150px;
+    border: 4px solid #555; border-radius: 50px 50px 10px 10px;
+    background: rgba(0,0,0,0.5); position: relative;
+    display: flex; align-items: center; justify-content: center;
+}
+.gas-volume {
+    width: 90px; height: 140px;
+    background: radial-gradient(circle, rgba(0,240,255,0.2), rgba(0,240,255,0.05));
+    border-radius: 45px 45px 8px 8px;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 0.8rem; font-weight: bold; color: #00f0ff;
+    transition: transform 0.1s, background 0.1s;
+}
+
+
+/* Module 5: Leak Simulator */
+.leak-environment {
+    width: 100%; height: 150px; position: relative;
+    border-bottom: 2px solid #555;
+}
+.leak-pipe {
+    position: absolute; bottom: 0; left: 50%; width: 20px; height: 30px;
+    background: #888; transform: translateX(-50%); border-radius: 5px 5px 0 0;
+}
+.leak-gas {
+    position: absolute; bottom: 30px; left: 50%; transform: translateX(-50%);
+    width: 40px; height: 40px; border-radius: 50%; opacity: 0;
+    transition: opacity 0.2s;
+}
+.leak-active-propane .leak-gas {
+    background: radial-gradient(circle, rgba(255,100,0,0.8), transparent);
+    animation: leakPropane 2s forwards; opacity: 1;
+}
+.leak-active-h2 .leak-gas {
+    background: radial-gradient(circle, rgba(0,240,255,0.8), transparent);
+    animation: leakH2 1s forwards; opacity: 1;
+}
+@keyframes leakPropane {
+    100% { transform: translateX(-50%) scale(4) translateY(10px); opacity: 0.5; }
+}
+@keyframes leakH2 {
+    100% { transform: translateX(-50%) scale(2) translateY(-120px); opacity: 0; }
+}
+
+/* Module 6: SMR & Carbon Capture */
+.smr-diagram {
+    display: flex; align-items: center; justify-content: space-between;
+    width: 100%; height: 150px; position: relative; padding: 0 1rem;
+}
+.smr-input { font-weight: bold; color: #888; }
+.smr-core {
+    padding: 1rem; border: 2px solid #888; border-radius: 8px; font-weight: bold;
+    background: rgba(255,255,255,0.05);
+}
+.smr-outputs { display: flex; flex-direction: column; gap: 10px; }
+.smr-out-h2 { color: var(--accent-cyan); font-weight: bold; }
+.smr-out-co2 {
+    color: #ff6666; font-weight: bold; transition: transform 0.5s, color 0.5s;
+}
+.ccs-active .smr-out-co2 { transform: translateY(40px); color: #555; } /* Stored underground */
+
+/* Switch */
+.switch-container { position: relative; display: inline-block; width: 40px; height: 20px; }
+.switch-container input { opacity: 0; width: 0; height: 0; }
+.slider { position: absolute; cursor: pointer; top: 0; left: 0; right: 0; bottom: 0; background-color: #555; transition: .4s; border-radius: 20px; }
+.slider:before { position: absolute; content: ""; height: 16px; width: 16px; left: 2px; bottom: 2px; background-color: white; transition: .4s; border-radius: 50%; }
+input:checked + .slider { background-color: var(--accent-cyan); }
+input:checked + .slider:before { transform: translateX(20px); }
+
+/* Module 7: Transport */
+.map-visual {
+    width: 100%; height: 150px; position: relative;
+    background: radial-gradient(circle, rgba(0,0,0,0.5), transparent);
+    border-radius: 10px; border: 1px solid rgba(255,255,255,0.1);
+}
+.map-node {
+    position: absolute; top: 50%; width: 40px; height: 40px;
+    background: #333; border: 2px solid #fff; border-radius: 50%;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 0.6rem; font-weight: bold; transform: translateY(-50%);
+}
+.node-a { left: 10%; }
+.node-b { right: 10%; }
+.transport-path {
+    position: absolute; top: 50%; left: 10%; right: 10%; height: 2px;
+    background: repeating-linear-gradient(90deg, #555, #555 5px, transparent 5px, transparent 10px);
+    transform: translateY(-50%); z-index: 1;
+}
+.transport-vehicle {
+    position: absolute; top: -10px; left: 0; font-size: 1.5rem; transition: left 2s ease-in-out;
+}
+
+/* Module 8: Global City */
+.city-visual {
+    display: flex; justify-content: space-around; align-items: flex-end;
+    width: 100%; height: 150px; border-bottom: 2px solid #555; padding-bottom: 10px;
+}
+.city-building {
+    display: flex; flex-direction: column; align-items: center; justify-content: center;
+    width: 60px; height: 80px; background: #444; border: 2px solid #666; border-radius: 5px;
+    font-weight: bold; font-size: 0.8rem; color: #aaa; transition: 0.5s; position: relative;
+}
+.city-emissions {
+    position: absolute; top: -25px; font-size: 1.5rem; transition: opacity 0.5s;
+}
+.city-clean .city-building { background: rgba(0, 240, 255, 0.2); border-color: #00f0ff; color: #fff; box-shadow: 0 0 15px rgba(0,240,255,0.3); }
+.city-clean .city-emissions { opacity: 0; }
+
+
+/* Module 9: Embrittlement */
+.lattice-visual {
+    width: 200px; height: 100px; position: relative;
+    display: flex; flex-wrap: wrap; gap: 5px; justify-content: center;
+    border: 2px solid #555; padding: 10px; background: #222;
+}
+.fe-atom {
+    width: 40px; height: 40px; border-radius: 50%;
+    background: radial-gradient(circle, #888, #444);
+}
+.inject-gas {
+    position: absolute; left: -30px; top: 50%; transform: translateY(-50%);
+    border-radius: 50%; opacity: 0;
+}
+.brittle-active-ch4 .inject-gas {
+    width: 40px; height: 40px; background: rgba(255,100,0,0.8);
+    animation: bounceOff 2s forwards; opacity: 1;
+}
+.brittle-active-h2 .inject-gas {
+    width: 10px; height: 10px; background: rgba(0,240,255,0.8);
+    animation: slipThrough 2s forwards; opacity: 1;
+}
+@keyframes bounceOff { 50% { left: 0; } 100% { left: -50px; opacity: 0; } }
+@keyframes slipThrough { 100% { left: 120%; opacity: 0; } }
+
+/* Module 10: Invisible Flame */
+.flame-environment {
+    width: 100%; height: 150px; position: relative;
+    background: #add8e6; /* Daylight sky */
+    border-radius: 10px; overflow: hidden; transition: filter 0.5s;
+}
+.flare-stack {
+    position: absolute; bottom: 0; left: 50%; transform: translateX(-50%);
+    width: 20px; height: 50px; background: #666;
+}
+.h2-flame {
+    position: absolute; bottom: 50px; left: 50%; transform: translateX(-50%);
+    width: 30px; height: 60px; background: rgba(255,255,255,0.05); /* Invisible */
+    border-radius: 50% 50% 20% 20%; filter: blur(2px);
+    animation: flicker 0.1s infinite alternate;
+}
+@keyframes flicker { 100% { transform: translateX(-50%) scaleY(1.1); } }
+.thermal-active .flame-environment { filter: invert(1) hue-rotate(180deg); }
+.thermal-active .h2-flame { background: radial-gradient(circle, #ff0000, #ffaa00); box-shadow: 0 0 20px #ff0000; }
+
+/* Module 11: Thermal Conductivity */
+.thermal-visual {
+    display: flex; align-items: center; justify-content: center; gap: 2rem;
+    width: 100%; height: 150px;
+}
+.generator-core {
+    width: 80px; height: 80px; border-radius: 50%;
+    background: radial-gradient(circle, #ff3333, #aa0000);
+    display: flex; align-items: center; justify-content: center;
+    font-weight: bold; color: #fff; box-shadow: 0 0 20px #ff0000;
+    transition: background 3s, box-shadow 3s;
+}
+.thermometer {
+    width: 20px; height: 100px; border: 2px solid #fff; border-radius: 10px;
+    position: relative; overflow: hidden; background: rgba(255,255,255,0.1);
+}
+.mercury {
+    position: absolute; bottom: 0; width: 100%; height: 100%; background: #ff3333;
+    transition: height 3s;
+}
+
+/* Module 12: Spin States */
+.spin-visual {
+    display: flex; gap: 10px; margin-top: 1rem;
+}
+.proton-spin {
+    width: 40px; height: 40px; border-radius: 50%; background: #00f0ff;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 1.5rem; font-weight: bold; color: #000;
+}
+.p-spin-up { animation: spinRight 1s linear infinite; }
+.p-spin-down { animation: spinRight 1s linear infinite; } /* Initially same direction (Ortho) */
+.para-state .p-spin-down { animation: spinLeft 1s linear infinite; } /* Opposite direction (Para) */
+
+@keyframes spinRight { 100% { transform: rotate(360deg); } }
+@keyframes spinLeft { 100% { transform: rotate(-360deg); } }
+

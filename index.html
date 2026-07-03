@@ -1,0 +1,292 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="The ultimate global hub for hydrogen fuel information, daily news, ideas, and basics.">
+    <title>HydrogenHub | The Future of Fuel</title>
+    
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500&family=Outfit:wght@400;600;700;800&display=swap" rel="stylesheet">
+    
+    <!-- Custom CSS -->
+    <link rel="stylesheet" href="index.css">
+</head>
+<body>
+    <!-- Background Elements for Animations -->
+    <div class="bg-gradient"></div>
+    <div class="glow-orb orb-1"></div>
+    <div class="glow-orb orb-2"></div>
+
+    <nav class="navbar hidden-element">
+        <div class="nav-container">
+            <a href="#" class="logo">Hydro<span>Hub</span></a>
+            <ul class="nav-links">
+                <li><a href="index.html">Home</a></li>
+                <li><a href="info.html">Global Info</a></li>
+                <li><a href="index.html#news">News</a></li>
+                <li><a href="info.html#simlab">SimLab 🧪</a></li>
+                <li><a href="community-research.html">Community Research</a></li>
+                <li><a href="index.html#about">About</a></li>
+                <li><a href="index.html#contact">Contact</a></li>
+                <li id="nav-auth-item"><a href="#" id="nav-login-btn" style="color: var(--accent-cyan); font-weight: bold;">Login / Sign Up</a></li>
+            </ul>
+        </div>
+    </nav>
+
+    <header id="hero" class="hero-section">
+        <div class="hero-content hidden-element">
+            <span class="badge">The Clean Energy Revolution</span>
+            <h1>Fueling the Future with <span>Hydrogen</span></h1>
+            <p>Your centralized source for global hydrogen fuel information, cutting-edge ideas, and daily news updates.</p>
+            <div class="hero-buttons">
+                <a href="#basics" class="btn btn-primary">Learn the Basics</a>
+                <a href="#news" class="btn btn-secondary">Read Today's News</a>
+            </div>
+        </div>
+        <div class="hero-graphic hidden-element">
+            <!-- Animated H2 Molecule Representation -->
+            <div class="molecule-container">
+                <div class="atom atom-h1">H</div>
+                <div class="bond"></div>
+                <div class="atom atom-h2">H</div>
+            </div>
+        </div>
+    </header>
+
+    <main>
+        <!-- Separate Section for Hydrogen Fuel (Basics) -->
+        <section id="basics" class="basics-section section-padding">
+            <div class="section-header hidden-element">
+                <h2>Hydrogen <span>Basics</span></h2>
+                <p>Understanding the most abundant element in the universe and how it powers our world.</p>
+            </div>
+            
+            <div class="basics-grid">
+                <div class="card glass-card hidden-element delay-1">
+                    <div class="card-icon green"><span class="icon-text">H</span></div>
+                    <h3>Green Hydrogen</h3>
+                    <p>Produced using renewable energy (like solar or wind) through electrolysis. Zero carbon emissions during production.</p>
+                </div>
+                <div class="card glass-card hidden-element delay-2">
+                    <div class="card-icon blue"><span class="icon-text">H</span></div>
+                    <h3>Blue Hydrogen</h3>
+                    <p>Produced from natural gas, but the carbon emissions are captured and stored (CCS) underground.</p>
+                </div>
+                <div class="card glass-card hidden-element delay-3">
+                    <div class="card-icon gray"><span class="icon-text">H</span></div>
+                    <h3>Gray Hydrogen</h3>
+                    <p>The most common form today. Produced from natural gas via steam methane reforming, but emissions are released into the atmosphere.</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- Global Information Hub -->
+        <section id="hub" class="hub-section section-padding">
+            <div class="section-header hidden-element">
+                <h2>Global <span>Information</span> Hub</h2>
+                <p>Data, use-cases, and global adoption metrics for hydrogen technology.</p>
+            </div>
+
+            <div class="hub-layout">
+                <div class="hub-stats hidden-element">
+                    <div class="stat-box">
+                        <span class="stat-number" data-target="90">0</span><span class="stat-unit">M</span>
+                        <span class="stat-label">Tons Produced Annually</span>
+                    </div>
+                    <div class="stat-box">
+                        <span class="stat-number" data-target="300">0</span><span class="stat-unit">+</span>
+                        <span class="stat-label">Global H2 Projects</span>
+                    </div>
+                    <div class="stat-box">
+                        <span class="stat-number" data-target="2050">2024</span><span class="stat-unit"></span>
+                        <span class="stat-label">Net Zero Target Year</span>
+                    </div>
+                </div>
+
+                <div class="hub-content hidden-element delay-1">
+                    <h3>Key Applications</h3>
+                    <ul class="application-list">
+                        <li>
+                            <div class="app-icon">&#128663;</div>
+                            <div class="app-text">
+                                <strong>Transportation</strong>
+                                <p>Fuel Cell Electric Vehicles (FCEVs), heavy-duty trucks, aviation, and maritime shipping.</p>
+                            </div>
+                        </li>
+                        <li>
+                            <div class="app-icon">&#127981;</div>
+                            <div class="app-text">
+                                <strong>Industrial Processes</strong>
+                                <p>Green steel manufacturing, ammonia production for fertilizers, and chemical refining.</p>
+                            </div>
+                        </li>
+                        <li>
+                            <div class="app-icon">&#9889;</div>
+                            <div class="app-text">
+                                <strong>Power Generation</strong>
+                                <p>Long-duration energy storage and stabilizing renewable energy grids.</p>
+                            </div>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </section>
+
+        <!-- Daily News and Ideas Section -->
+        <section id="news" class="news-section section-padding">
+            <div class="section-header hidden-element">
+                <h2>Daily <span>News & Ideas</span></h2>
+                <p>The latest updates, breakthroughs, and futuristic ideas from the hydrogen sector. Updated daily.</p>
+            </div>
+
+            <div class="news-controls hidden-element">
+                <button class="filter-btn active" data-filter="all">All Updates</button>
+                <button class="filter-btn" data-filter="news">Global News</button>
+                <button class="filter-btn" data-filter="ideas">New Ideas & Tech</button>
+            </div>
+
+            <!-- News Container Populated by JS -->
+            <div id="news-container" class="news-grid">
+                <!-- Javascript will inject cards here -->
+            </div>
+        </section>
+        <!-- Research Papers Section -->
+        <section id="research" class="research-section section-padding">
+            <div class="section-header hidden-element">
+                <h2>Academic <span>Research</span></h2>
+                <p>Explore publicly available, open-access scientific papers and literature driving the hydrogen economy forward.</p>
+            </div>
+            
+            <div class="research-grid" id="research-container">
+                <!-- Javascript will inject research cards here -->
+            </div>
+            
+            <div class="view-all-container hidden-element delay-2">
+                <h3 style="margin-bottom: 1.5rem; color: #fff;">Explore More on Global Academic Databases</h3>
+                <div class="database-links">
+                      <a href="https://scholar.google.com/scholar?q=hydrogen+fuel" target="_blank" class="btn btn-secondary">Google Scholar</a>
+                      <a href="https://europepmc.org/search?query=hydrogen%20fuel" target="_blank" class="btn btn-secondary">Europe PMC</a>
+                      <a href="https://arxiv.org/search/advanced?advanced=&terms-0-operator=AND&terms-0-term=hydrogen+fuel&terms-0-field=all" target="_blank" class="btn btn-secondary">arXiv.org</a>
+                      <a href="https://pubmed.ncbi.nlm.nih.gov/?term=hydrogen+fuel" target="_blank" class="btn btn-secondary">PubMed</a>
+                      <a href="https://www.sciencedirect.com/search?qs=hydrogen%20fuel" target="_blank" class="btn btn-secondary">ScienceDirect</a>
+                      <a href="https://ieeexplore.ieee.org/search/searchresult.jsp?newsearch=true&queryText=hydrogen%20fuel" target="_blank" class="btn btn-secondary">IEEE Xplore</a>
+                      <a href="https://www.researchgate.net/search/publication?q=hydrogen+fuel" target="_blank" class="btn btn-secondary">ResearchGate</a>
+                      <a href="https://doaj.org/search/articles?source=%7B%22query%22%3A%7B%22query_string%22%3A%7B%22query%22%3A%22hydrogen%20fuel%22%2C%22default_operator%22%3A%22AND%22%7D%7D%7D" target="_blank" class="btn btn-secondary">DOAJ</a>
+                      <a href="https://www.osti.gov/search/semantic:hydrogen%20fuel" target="_blank" class="btn btn-secondary">OSTI.gov (DOE)</a>
+                      <a href="https://link.springer.com/search?query=hydrogen+fuel" target="_blank" class="btn btn-secondary">SpringerLink</a>
+                </div>
+            </div>
+        </section>
+
+        <!-- About Section -->
+        <section id="about" class="about-section section-padding">
+            <div class="section-header hidden-element">
+                <h2>About <span>HydroHub</span></h2>
+                <p>Our mission is to accelerate the clean energy transition by democratizing knowledge about hydrogen fuel.</p>
+            </div>
+            <div class="about-content hidden-element delay-1">
+                <div class="about-card glass-card">
+                    <p>Hydrogen is the most abundant element in the universe, and we believe it holds the key to a sustainable, zero-emission future. HydroHub was created to be a centralized, dynamic platform that aggregates the world's most critical hydrogen news, technological breakthroughs, and investment trends in one place.</p>
+                    <p>Whether you're an industry professional, a student, or a clean energy enthusiast, our platform ensures you stay at the forefront of the hydrogen revolution.</p>
+                    <div class="creator-attribution">
+                        <p>Conceptualized, designed, and developed by <strong>Jairaj Sapkal</strong>, HydroHub stands as a testament to the commitment to accessible, future-forward energy education.</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Contact & Ask Doubt Section -->
+        <section id="contact" class="contact-section section-padding">
+            <div class="section-header hidden-element">
+                <h2>Ask a <span>Doubt</span></h2>
+                <p>Have questions about hydrogen technology or our platform? Get in touch with us.</p>
+            </div>
+            <div class="contact-grid hidden-element delay-1">
+                <div class="contact-info glass-card">
+                    <h3>Contact Details</h3>
+                        <ul>
+                            <li style="margin-bottom: 1rem;"><strong>Email:</strong> <a href="mailto:sapkaljairaj215sm@gmail.com" style="color:var(--text-secondary); text-decoration:none;">sapkaljairaj215sm@gmail.com</a></li>
+                        </ul>
+                      
+                      <h4 style="margin-top: 2rem; margin-bottom: 1rem; color: var(--text-primary); font-family: var(--font-heading);">Connect With Us</h4>
+                      <div class="social-links" style="display: flex; gap: 1.5rem; margin-bottom: 1.5rem;">
+                          <a href="#" class="social-icon" title="Instagram">
+                              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="width:24px; height:24px;"><rect x="2" y="2" width="20" height="20" rx="5" ry="5"></rect><path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"></path><line x1="17.5" y1="6.5" x2="17.51" y2="6.5"></line></svg>
+                          </a>
+                          <a href="#" class="social-icon" title="Facebook">
+                              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="width:24px; height:24px;"><path d="M18 2h-3a5 5 0 0 0-5 5v3H7v4h3v8h4v-8h3l1-4h-4V7a1 1 0 0 1 1-1h3z"></path></svg>
+                          </a>
+                          <a href="#" class="social-icon" title="X (Twitter)">
+                              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="width:24px; height:24px;"><path d="M4 4l11.733 16h4.267l-11.733 -16z"></path><path d="M4 20l6.768 -6.768m2.46 -2.46l6.772 -6.772"></path></svg>
+                          </a>
+                          <a href="#" class="social-icon" title="Discord">
+                              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="width:24px; height:24px;"><path d="M9 12h.01"/><path d="M15 12h.01"/><path d="M7.5 7.5c3.5-1 5.5-1 9 0"/><path d="M7 16.5c3.5 1 6.5 1 10 0"/><path d="M15.5 17c0 1 1.5 3 2 3c1.5 0 2.833 -1.667 3.5 -3c.667 -1.667 .5 -5.833 -1.5 -11.5c-1.457 -1.015 -3 -1.34 -4.5 -1.5l-1 2.5"/><path d="M8.5 17c0 1 -1.356 3 -1.832 3c-1.429 0 -2.698 -1.667 -3.333 -3c-.635 -1.667 -.476 -5.833 1.428 -11.5c1.388 -1.015 2.857 -1.34 4.286 -1.5l1 2.5"/></svg>
+                          </a>
+                      </div>
+                    <p class="contact-note">For immediate hydrogen-related questions, try asking our AI assistant using the chat button in the bottom right corner!</p>
+                </div>
+                <form class="contact-form glass-card" id="contact-form">
+                    <h3>Send a Message</h3>
+                    <div class="form-group">
+                        <label for="name">Name</label>
+                        <input type="text" id="name" placeholder="Enter your name" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="email">Email</label>
+                        <input type="email" id="email" placeholder="Enter your email" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="message">Your Doubt / Message</label>
+                        <textarea id="message" rows="4" placeholder="How does a fuel cell work?" required></textarea>
+                    </div>
+                    <button type="submit" class="btn btn-primary">Submit Doubt</button>
+                </form>
+            </div>
+        </section>
+    </main>
+
+    <!-- Gemini Chatbot UI -->
+        <!-- Chatbot Container -->
+        <div class="chatbot-container">
+            <button id="chatbot-toggle" class="chatbot-toggle">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 8V4H8"/><rect width="16" height="12" x="4" y="8" rx="2"/><path d="M2 14h2"/><path d="M20 14h2"/><path d="M15 13v2"/><path d="M9 13v2"/></svg>
+            </button>
+            <div id="chatbot-panel" class="chatbot-panel glass-card hidden">
+                <div class="chat-header">
+                    <div style="display: flex; align-items: center; gap: 0.5rem;">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="width: 20px; height: 20px;"><path d="M12 8V4H8"/><rect width="16" height="12" x="4" y="8" rx="2"/><path d="M2 14h2"/><path d="M20 14h2"/><path d="M15 13v2"/><path d="M9 13v2"/></svg>
+                        <h3>Hydrobot</h3>
+                    </div>
+                    <button id="chatbot-close" class="chatbot-close">Ã¢Å“â€¢</button>
+                </div>
+            <div class="chat-messages" id="chat-messages">
+                <div class="message ai-message">
+                    <p>Hello! I am Hydrobot, your Hydrogen AI Assistant. Ask me anything about hydrogen fuel, fuel cells, green energy, or related technologies.</p>
+                </div>
+            </div>
+            <form id="chat-input-form" class="chat-input-form">
+                <input type="text" id="chat-input" placeholder="Ask about hydrogen..." autocomplete="off" required>
+                <button type="submit" id="chat-send-btn">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="22" y1="2" x2="11" y2="13"></line><polygon points="22 2 15 22 11 13 2 9 22 2"></polygon></svg>
+                </button>
+            </form>
+        </div>
+    </div>
+
+            <footer>
+        <div class="footer-content">
+            <div class="footer-logo">Hydro<span>Hub</span></div>
+            <p>&copy; 2026 Hydrogen Information Hub. Accelerating the Clean Energy Transition.</p>
+        </div>
+    </footer>
+
+    <!-- Custom JS -->
+    <script type="module" src="main.js"></script>
+    <script type="module" src="firebase-config.js"></script>
+    <script type="module" src="auth.js?v=2"></script>
+</body>
+</html>
+
