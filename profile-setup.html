@@ -4,6 +4,12 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Profile Setup | HydrogenHub</title>
+    
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500&family=Outfit:wght@400;600;700;800&display=swap" rel="stylesheet">
+    
     <link rel="stylesheet" href="index.css">
     <style>
         .profile-setup-container {
@@ -37,18 +43,24 @@
        })();
     </script>
 </head>
-<body class="theme-dark">
+<body>
 
-    <nav class="glass-nav">
+    <!-- Background Elements for Animations -->
+    <div class="bg-gradient"></div>
+    <div class="glow-orb orb-1"></div>
+    <div class="glow-orb orb-2"></div>
+
+    <nav class="navbar hidden-element">
         <div class="nav-container">
-            <div class="logo">
-                <h1>HydroHub</h1>
-            </div>
+            <a href="index.html" class="logo">Hydro<span>Hub</span></a>
+            <ul class="nav-links">
+                <li><a href="index.html">Home</a></li>
+            </ul>
         </div>
     </nav>
 
-    <main class="profile-setup-container glass-card">
-        <h2>Complete Your Profile</h2>
+    <main class="profile-setup-container glass-card" style="position: relative; z-index: 10;">
+        <h2 style="font-family: var(--font-heading);">Complete Your Profile</h2>
         <p style="color: var(--text-secondary); margin-top: 0.5rem;">Tell us a bit about yourself before you join the community.</p>
 
         <div class="profile-form">

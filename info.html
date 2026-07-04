@@ -26,13 +26,19 @@
             <a href="index.html" class="logo">Hydro<span>Hub</span></a>
             <ul class="nav-links">
                 <li><a href="index.html">Home</a></li>
-                <li><a href="info.html">Global Info</a></li>
+                <li><a href="index.html#hub">Global Info</a></li>
                 <li><a href="index.html#news">News</a></li>
-                <li><a href="info.html#simlab">SimLab 🧪</a></li>
-                <li><a href="community-research.html">Community Research</a></li>
+                <li><a href="info.html">SimLab 🧪</a></li>
+                                  <li class="dropdown">
+                      <a href="javascript:void(0)" class="dropbtn">Research ▾</a>
+                      <div class="dropdown-content">
+                          <a href="index.html#research">Academic Research</a>
+                          <a href="community-research.html">Community Research</a>
+                      </div>
+                  </li>
                 <li><a href="index.html#about">About</a></li>
                 <li><a href="index.html#contact">Contact</a></li>
-                <li id="nav-auth-item"><a href="#" id="nav-login-btn" style="color: var(--accent-cyan); font-weight: bold;">Login / Sign Up</a></li>
+                <li id="nav-auth-item" style="visibility: hidden;"><a href="#" id="nav-login-btn" style="color: var(--accent-cyan); font-weight: bold;">Login / Sign Up</a></li>
             </ul>
         </div>
     </nav>
@@ -48,7 +54,7 @@
         </section>
 
         <!-- THE HYDROGEN ENCYCLOPEDIA -->
-        <section id="encyclopedia-section" class="section-padding" style="margin-bottom: 4rem;">
+        <section id="simlab" class="section-padding" style="margin-bottom: 4rem;">
             <div class="section-header">
                 <h2>The Hydrogen <span>Encyclopedia</span></h2>
                 <p>A comprehensive, interactive guide covering the atomic physics, chemistry, safety, and economics of hydrogen fuel.</p>

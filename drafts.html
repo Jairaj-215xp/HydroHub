@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Community Research | HydrogenHub</title>
+    <title>My Drafts | HydrogenHub</title>
     <link rel="stylesheet" href="index.css">
     <style>
         @keyframes slideInDown {
@@ -56,20 +56,20 @@
                   </li>
                 <li><a href="index.html#about">About</a></li>
                 <li><a href="index.html#contact">Contact</a></li>
-                <li id="nav-auth-item" style="visibility: hidden;"><a href="#" id="nav-login-btn" style="color: var(--accent-cyan); font-weight: bold;">Login / Sign Up</a></li>
+                <li id="nav-auth-item" style="visibility: hidden;"><a href="account.html" id="nav-login-btn" style="color: var(--accent-cyan); font-weight: bold;">Account</a></li>
             </ul>
         </div>
     </nav>
 
     <header class="gallery-header">
-        <h1>Community <span>Research</span></h1>
-        <p style="margin-bottom: 2rem;">Explore the latest papers, abstracts, and findings uploaded by the HydrogenHub community.</p>
-        <a href="upload.html" class="btn btn-primary" style="font-size: 1.1rem; padding: 0.8rem 2rem;">Submit Your Research</a>
+        <h1>My <span>Drafts</span></h1>
+        <p style="margin-bottom: 2rem;">Work in progress and unpublished research papers.</p>
+        <a href="#" class="btn btn-primary" style="font-size: 1.1rem; padding: 0.8rem 2rem;" onclick="alert('Feature coming soon!')">Create New Draft</a>
     </header>
 
     <main class="container">
-        <div id="community-gallery-container" class="research-grid">
-            <p style="text-align:center; width:100%; color:var(--text-secondary);">Loading community research...</p>
+        <div id="drafts-gallery-container" class="research-grid">
+            <p style="text-align:center; width:100%; color:var(--text-secondary);">You have no unpublished drafts.</p>
         </div>
     </main>
 
@@ -80,7 +80,7 @@
     <!-- Inject Auth Modal logic so the navbar works correctly -->
     <script type="module" src="firebase-config.js"></script>
     <script type="module" src="auth.js?v=4"></script>
-    <script type="module" src="gallery-v2.js"></script>
+    <script type="module" src="drafts.js"></script>
 </body>
 </html>
 

@@ -218,27 +218,21 @@ onAuthStateChanged(auth, (user) => {
   authLi.id = 'nav-auth-item';
 
   if (user) {
-    // Generate a Minecraft-style SVG Avatar
-    const colors = ['#FF5733', '#33FF57', '#3357FF', '#F333FF', '#33FFF3', '#FF33A1', '#FF8C33', '#8C33FF', '#FF3333', '#33FF8C'];
-    const charCode = user.uid ? user.uid.charCodeAt(0) : Math.floor(Math.random() * 255);
-    const color = colors[charCode % colors.length];
-    const svg = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100" width="100" height="100">
-        <rect width="100" height="100" fill="#ffffff"/>
-        <g transform="translate(25, 15) scale(10)" fill="${color}">
-            <rect x="0" y="0" width="1" height="7"/>
-            <rect x="4" y="0" width="1" height="7"/>
-            <rect x="1" y="3" width="3" height="1"/>
-        </g>
-    </svg>`;
-    let avatarUrl = `data:image/svg+xml;utf8,${encodeURIComponent(svg)}`;
+    // Generate a Random Hue based on user UID
+    const charCode = user.uid ? (user.uid.charCodeAt(0) + user.uid.charCodeAt(user.uid.length - 1)) : Math.floor(Math.random() * 360);
+    const hueDeg = (charCode * 45) % 360; // Multiply to spread out the color spectrum
+    
+    let avatarUrl = 'Default%20logo.png';
+    let filterStyle = `filter: hue-rotate(${hueDeg}deg) saturate(1.5);`;
     
     if (user.photoURL && user.photoURL.includes('cloudinary.com')) {
         avatarUrl = user.photoURL;
+        filterStyle = ''; // Don't apply filters to custom uploaded pictures
     }
 
     authLi.innerHTML = `
         <div class="nav-auth-container">
-            <img src="${avatarUrl}" alt="Profile" class="nav-avatar" referrerpolicy="no-referrer">
+            <img src="${avatarUrl}" alt="Profile" class="nav-avatar" style="${filterStyle}" referrerpolicy="no-referrer">
             <div class="nav-dropdown">
                 <a href="account.html?v=3">My Account</a>
                 <a href="#" id="nav-switch-btn">Switch Account</a>

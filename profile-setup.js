@@ -1,6 +1,5 @@
 import { auth, db } from './firebase-config.js';
 import { onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.7.0/firebase-auth.js";
-import { onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.7.0/firebase-auth.js";
 
 const btnSaveProfile = document.getElementById('btn-save-profile');
 const profileError = document.getElementById('profile-error');
@@ -34,6 +33,44 @@ btnSaveProfile.addEventListener('click', async () => {
     try {
         btnSaveProfile.disabled = true;
         profileError.style.display = 'none';
+        btnSaveProfile.innerText = "Checking username...";
+
+        const token = await currentUser.getIdToken();
+        
+        // 1. Check if username exists
+        const queryRes = await fetch('https://firestore.googleapis.com/v1/projects/hydrohub-215/databases/(default)/documents:runQuery', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'Authorization': `Bearer ${token}`
+            },
+            body: JSON.stringify({
+                structuredQuery: {
+                    from: [{ collectionId: "users" }],
+                    where: {
+                        compositeFilter: {
+                            op: 'AND',
+                            filters: [
+                                { fieldFilter: { field: { fieldPath: "username" }, op: "EQUAL", value: { stringValue: username } } },
+                                { fieldFilter: { field: { fieldPath: "__name__" }, op: "NOT_EQUAL", value: { referenceValue: `projects/hydrohub-215/databases/(default)/documents/users/${currentUser.uid}` } } }
+                            ]
+                        }
+                    },
+                    limit: 1
+                }
+            })
+        });
+        
+        const queryData = await queryRes.json();
+        // runQuery always returns an array of results. If a document matches, it will have a 'document' property.
+        if (queryData && queryData.length > 0 && queryData[0].document) {
+            profileError.innerText = "That username is already taken. Please choose another.";
+            profileError.style.display = 'block';
+            btnSaveProfile.disabled = false;
+            btnSaveProfile.innerText = "Complete Setup";
+            return;
+        }
+
         btnSaveProfile.innerText = "Saving Profile...";
 
         // Save to Firestore using REST API to prevent websocket hangs

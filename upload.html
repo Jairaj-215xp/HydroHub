@@ -59,16 +59,19 @@
                 </div>
 
                 <div class="upload-zone" id="upload-zone">
-                    <input type="file" id="file-input" accept=".pdf,.doc,.docx,.zip">
-                    <h3>Drag & Drop File Here</h3>
-                    <p>or click to browse (.pdf, .doc, .zip)</p>
+                    <input type="file" id="file-input" accept="image/*,video/*,audio/*,.pdf,.doc,.docx,.zip">
+                    <h3>Drag & Drop Content Here</h3>
+                    <p>or click to browse (Images, PDF, Doc, Zip, Video)</p>
                     <div class="file-name-display" id="file-name"></div>
                 </div>
 
                 <p id="upload-error" class="error-text" style="color: #ff6666; font-size: 0.9rem; display: none; margin-bottom: 1rem;"></p>
                 <p id="upload-success" style="color: var(--accent-green); font-size: 0.9rem; display: none; margin-bottom: 1rem;"></p>
 
-                <button id="btn-submit-upload" class="btn btn-primary" style="width: 100%;">Submit Research</button>
+                <div style="display: flex; gap: 1rem; margin-top: 1rem;">
+                    <button id="btn-save-draft" class="btn btn-outline" style="flex: 1; border-color: var(--accent-cyan); color: var(--accent-cyan);">Save as Draft</button>
+                    <button id="btn-submit-upload" class="btn btn-primary" style="flex: 2;">Submit Research</button>
+                </div>
             </div>
         </div>
     </main>

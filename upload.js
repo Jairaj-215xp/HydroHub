@@ -116,6 +116,9 @@ btnSubmit.addEventListener('click', async () => {
                     description: { stringValue: desc },
                     fileName: { stringValue: selectedFile.name },
                     fileUrl: { stringValue: downloadURL },
+                    resourceType: { stringValue: cloudinaryData.resource_type || 'raw' },
+                    upvotesCount: { integerValue: 0 },
+                    upvotedBy: { arrayValue: { values: [] } },
                     uploadedBy: { stringValue: user.uid },
                     uploaderEmail: { stringValue: user.email },
                     createdAt: { timestampValue: new Date().toISOString() }
@@ -150,3 +153,87 @@ btnSubmit.addEventListener('click', async () => {
         btnSubmit.innerText = "Submit Research";
     }
 });
+
+const btnSaveDraft = document.getElementById('btn-save-draft');
+if (btnSaveDraft) {
+    btnSaveDraft.addEventListener('click', async () => {
+        const user = auth.currentUser;
+        if (!user) {
+            openAuthModal();
+            return;
+        }
+
+        const title = document.getElementById('upload-title').value.trim();
+        const authors = document.getElementById('upload-authors').value.trim();
+        const desc = document.getElementById('upload-desc').value.trim();
+
+        if (!title && !authors && !desc && !selectedFile) {
+            uploadError.innerText = "Please enter some content to save as a draft.";
+            uploadError.style.display = 'block';
+            return;
+        }
+
+        try {
+            btnSaveDraft.disabled = true;
+            btnSaveDraft.innerText = "Saving...";
+            uploadError.style.display = 'none';
+
+            let downloadURL = "";
+            let fileNameStr = "";
+            if (selectedFile) {
+                fileNameStr = selectedFile.name;
+                // For drafts, we might just want to store the metadata if we don't upload the file yet. 
+                // But let's upload the file if it exists so the draft is fully complete.
+                const formData = new FormData();
+                formData.append('file', selectedFile);
+                formData.append('upload_preset', 'hydrohub_papers');
+                const uploadRes = await fetch('https://api.cloudinary.com/v1_1/dzyaeqoix/auto/upload', {
+                    method: 'POST',
+                    body: formData
+                });
+                if (uploadRes.ok) {
+                    const data = await uploadRes.json();
+                    downloadURL = data.secure_url;
+                }
+            }
+
+            const token = await user.getIdToken();
+            const projectId = "hydrohub-215";
+            const url = `https://firestore.googleapis.com/v1/projects/${projectId}/databases/(default)/documents/users/${user.uid}/drafts`;
+
+            const response = await fetch(url, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': `Bearer ${token}`
+                },
+                body: JSON.stringify({
+                    fields: {
+                        title: { stringValue: title },
+                        authors: { stringValue: authors },
+                        description: { stringValue: desc },
+                        fileName: { stringValue: fileNameStr },
+                        fileUrl: { stringValue: downloadURL },
+                        createdAt: { timestampValue: new Date().toISOString() }
+                    }
+                })
+            });
+
+            if (!response.ok) {
+                const errorText = await response.text();
+                throw new Error(`Server Error (${response.status}): ${errorText}`);
+            }
+
+            uploadSuccess.innerText = "Draft saved successfully! You can find it in your Account dashboard.";
+            uploadSuccess.style.display = 'block';
+
+        } catch (error) {
+            console.error("Draft Error:", error);
+            uploadError.innerText = error.message;
+            uploadError.style.display = 'block';
+        } finally {
+            btnSaveDraft.disabled = false;
+            btnSaveDraft.innerText = "Save as Draft";
+        }
+    });
+}

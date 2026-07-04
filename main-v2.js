@@ -3,6 +3,46 @@ if ('scrollRestoration' in history) {
 }
 
 import { geminiApiKey } from './env.js';
+import { auth } from './firebase-config.js';
+import { onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.7.0/firebase-auth.js";
+import { showConfirm, showAlert } from './ui-utils.js';
+
+window.userBookmarks = new Set();
+onAuthStateChanged(auth, async (user) => {
+    if (user) {
+        try {
+            const token = await user.getIdToken();
+            const projectId = "hydrohub-215";
+            const url = `https://firestore.googleapis.com/v1/projects/${projectId}/databases/(default)/documents/users/${user.uid}/bookmarks`;
+            const response = await fetch(url, { headers: { 'Authorization': `Bearer ${token}` } });
+            if (response.ok) {
+                const data = await response.json();
+                if (data.documents) {
+                    data.documents.forEach(doc => {
+                        const docId = doc.name.split('/').pop();
+                        window.userBookmarks.add(docId);
+                    });
+                }
+                document.querySelectorAll('.btn-bookmark-academic').forEach(btn => {
+                    if (window.userBookmarks.has(btn.getAttribute('data-id'))) {
+                        btn.style.color = 'var(--accent-cyan)';
+                        btn.innerHTML = `<svg width="24" height="24" viewBox="0 0 24 24" fill="var(--accent-cyan)" stroke="var(--accent-cyan)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 21l-7-5-7 5V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z"></path></svg>`;
+                        btn.setAttribute('data-bookmarked', 'true');
+                    }
+                });
+            }
+        } catch (e) {
+            console.error(e);
+        }
+    } else {
+        window.userBookmarks = new Set();
+        document.querySelectorAll('.btn-bookmark-academic').forEach(btn => {
+            btn.style.color = 'var(--text-secondary)';
+            btn.innerHTML = `<svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 21l-7-5-7 5V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z"></path></svg>`;
+            btn.removeAttribute('data-bookmarked');
+        });
+    }
+});
 
 document.addEventListener('DOMContentLoaded', () => {
     window.scrollTo(0, 0);
@@ -313,8 +353,8 @@ document.addEventListener('DOMContentLoaded', () => {
     async function fetchResearchPapers() {
         if (!researchContainer) return;
 
-        // Fetching 6 recent papers about hydrogen fuel and green energy using OpenAlex API
-        const API_URL = 'https://api.openalex.org/works?search=hydrogen%20fuel%20cell&per-page=6&sort=publication_date:desc';
+        // Fetching 6 recent papers about hydrogen fuel and green energy using OpenAlex API (Polite Pool)
+        const API_URL = 'https://api.openalex.org/works?search=hydrogen%20fuel%20cell&per-page=6&sort=publication_date:desc&mailto=contact@hydrohub.com';
 
         try {
             researchContainer.innerHTML = '<p style="text-align:center; width:100%; color:var(--text-secondary);">Loading latest academic papers...</p>';
@@ -347,9 +387,22 @@ document.addEventListener('DOMContentLoaded', () => {
                     const card = document.createElement('div');
                     card.className = `research-card glass-card ${delayClass}`;
                     
+                    const docId = item.id ? item.id.split('/').pop() : 'doc-' + Date.now();
+                    
+                    const isBookmarked = window.userBookmarks && window.userBookmarks.has(docId);
+                    const bookmarkColor = isBookmarked ? 'var(--accent-cyan)' : 'var(--text-secondary)';
+                    const bookmarkFill = isBookmarked ? 'var(--accent-cyan)' : 'none';
+                    const bookmarkStroke = isBookmarked ? 'var(--accent-cyan)' : 'currentColor';
+                    const bookmarkedAttr = isBookmarked ? 'data-bookmarked="true"' : '';
+                    
                     card.innerHTML = `
                         <div>
-                            <h3>${title}</h3>
+                            <div style="display: flex; justify-content: space-between; align-items: flex-start;">
+                                <h3>${title}</h3>
+                            <button class="btn-bookmark-academic" ${bookmarkedAttr} data-id="${docId}" data-title="${title.replace(/"/g, '&quot;')}" data-url="${readLink}" data-authors="${authors.replace(/"/g, '&quot;')}" data-desc="${abstract.replace(/"/g, '&quot;')}" data-date="${pubYear}" data-source="Academic" style="background: none; border: none; cursor: pointer; color: ${bookmarkColor}; transition: color 0.2s;" title="Bookmark this paper">
+                                    <svg width="24" height="24" viewBox="0 0 24 24" fill="${bookmarkFill}" stroke="${bookmarkStroke}" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 21l-7-5-7 5V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z"></path></svg>
+                                </button>
+                            </div>
                             <div class="research-authors">${authors.substring(0, 60)}${authors.length > 60 ? '...' : ''}</div>
                             <p class="research-abstract">${abstract}</p>
                         </div>
@@ -360,6 +413,84 @@ document.addEventListener('DOMContentLoaded', () => {
                     `;
                     
                     researchContainer.appendChild(card);
+                });
+                
+                // Attach bookmark listeners for academic papers
+                document.querySelectorAll('.btn-bookmark-academic').forEach(btn => {
+                    btn.addEventListener('click', async (e) => {
+                        const btnEl = e.currentTarget;
+                        const paperId = btnEl.getAttribute('data-id');
+                        const title = btnEl.getAttribute('data-title') || 'Unknown Paper';
+                        const fileUrl = btnEl.getAttribute('data-url') || '#';
+                        const authors = btnEl.getAttribute('data-authors') || 'Unknown Author';
+                        const desc = btnEl.getAttribute('data-desc') || 'No description provided.';
+                        const date = btnEl.getAttribute('data-date') || '';
+                        const source = btnEl.getAttribute('data-source') || 'Academic';
+                        
+                        if (!auth.currentUser) {
+                            await showAlert("Please log in to bookmark papers."); 
+                            return;
+                        }
+                        
+                        try {
+                            const projectId = "hydrohub-215";
+                            const token = await auth.currentUser.getIdToken();
+                            
+                            if (btnEl.getAttribute('data-bookmarked') === 'true') {
+                                const confirmRemove = await showConfirm("Are you sure you want to unbookmark this paper?");
+                                if (!confirmRemove) return;
+                                
+                                const deleteUrl = `https://firestore.googleapis.com/v1/projects/${projectId}/databases/(default)/documents/users/${auth.currentUser.uid}/bookmarks/${paperId}`;
+                                const response = await fetch(deleteUrl, {
+                                    method: 'DELETE',
+                                    headers: { 'Authorization': `Bearer ${token}` }
+                                });
+                                
+                                if (!response.ok) throw new Error("Failed to unbookmark");
+                                
+                                btnEl.style.color = 'var(--text-secondary)';
+                                btnEl.innerHTML = `<svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 21l-7-5-7 5V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z"></path></svg>`;
+                                btnEl.removeAttribute('data-bookmarked');
+                                if (window.userBookmarks) window.userBookmarks.delete(paperId);
+                                return;
+                            }
+                            
+                            // Bookmarking
+                            btnEl.style.color = 'var(--accent-cyan)';
+                            btnEl.innerHTML = `<svg width="24" height="24" viewBox="0 0 24 24" fill="var(--accent-cyan)" stroke="var(--accent-cyan)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 21l-7-5-7 5V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z"></path></svg>`;
+                            
+                            const url = `https://firestore.googleapis.com/v1/projects/${projectId}/databases/(default)/documents/users/${auth.currentUser.uid}/bookmarks/${paperId}?updateMask.fieldPaths=paperId&updateMask.fieldPaths=title&updateMask.fieldPaths=fileUrl&updateMask.fieldPaths=authors&updateMask.fieldPaths=description&updateMask.fieldPaths=date&updateMask.fieldPaths=source&updateMask.fieldPaths=savedAt`;
+                            
+                            const response = await fetch(url, {
+                                method: 'PATCH',
+                                headers: {
+                                    'Content-Type': 'application/json',
+                                    'Authorization': `Bearer ${token}`
+                                },
+                                body: JSON.stringify({
+                                    fields: {
+                                        paperId: { stringValue: paperId },
+                                        title: { stringValue: title },
+                                        fileUrl: { stringValue: fileUrl },
+                                        authors: { stringValue: authors },
+                                        description: { stringValue: desc },
+                                        date: { stringValue: date },
+                                        source: { stringValue: source },
+                                        savedAt: { timestampValue: new Date().toISOString() }
+                                    }
+                                })
+                            });
+                            
+                            if (!response.ok) {
+                                const errTxt = await response.text();
+                                throw new Error(errTxt);
+                            }
+                            btnEl.setAttribute('data-bookmarked', 'true');
+                            if (window.userBookmarks) window.userBookmarks.add(paperId);
+                        } catch (err) {
+                            console.error("Failed to process bookmark", err);
+                        }
+                    });
                 });
             } else {
                 researchContainer.innerHTML = '<p style="text-align:center; width:100%; color:var(--text-secondary);">No recent papers found.</p>';

@@ -68,6 +68,10 @@ tabs.forEach(tab => {
         
         tab.classList.add('active');
         document.getElementById(tab.dataset.tab).classList.add('active');
+        
+        if (tab.dataset.tab === 'tab-saved' && currentUser) {
+            fetchSavedContent(currentUser);
+        }
     });
 });
 
@@ -103,19 +107,14 @@ async function loadProfile(user) {
         const avatarPreview = document.getElementById('account-avatar-preview');
         if (user.photoURL && user.photoURL.includes('cloudinary.com')) {
             avatarPreview.src = user.photoURL;
+            avatarPreview.style.filter = ''; // Reset filter
         } else {
-            const colors = ['#FF5733', '#33FF57', '#3357FF', '#F333FF', '#33FFF3', '#FF33A1', '#FF8C33', '#8C33FF', '#FF3333', '#33FF8C'];
-            const charCode = user.uid ? user.uid.charCodeAt(0) : Math.floor(Math.random() * 255);
-            const color = colors[charCode % colors.length];
-            const svg = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100" width="100" height="100">
-                <rect width="100" height="100" fill="#ffffff"/>
-                <g transform="translate(25, 15) scale(10)" fill="${color}">
-                    <rect x="0" y="0" width="1" height="7"/>
-                    <rect x="4" y="0" width="1" height="7"/>
-                    <rect x="1" y="3" width="3" height="1"/>
-                </g>
-            </svg>`;
-            avatarPreview.src = `data:image/svg+xml;utf8,${encodeURIComponent(svg)}`;
+            // Generate a Random Hue based on user UID
+            const charCode = user.uid ? (user.uid.charCodeAt(0) + user.uid.charCodeAt(user.uid.length - 1)) : Math.floor(Math.random() * 360);
+            const hueDeg = (charCode * 45) % 360; 
+            
+            avatarPreview.src = 'Default%20logo.png';
+            avatarPreview.style.filter = `hue-rotate(${hueDeg}deg) saturate(1.5)`;
         }
 
         const response = await fetch(url, {
@@ -182,8 +181,53 @@ const btnCloseCropper = document.getElementById('btn-close-cropper');
 const btnCropUpload = document.getElementById('btn-crop-upload');
 let cropper = null;
 
+const avatarOptionsModal = document.getElementById('avatar-options-modal');
+const btnAvatarChange = document.getElementById('btn-avatar-change');
+const btnAvatarRemove = document.getElementById('btn-avatar-remove');
+const btnAvatarCancel = document.getElementById('btn-avatar-cancel');
+
 btnUploadAvatar.addEventListener('click', () => {
+    // Check if user has a custom cloudinary photo
+    if (currentUser && currentUser.photoURL && currentUser.photoURL.includes('cloudinary.com')) {
+        avatarOptionsModal.style.display = 'flex';
+    } else {
+        avatarInput.click();
+    }
+});
+
+btnAvatarCancel.addEventListener('click', () => {
+    avatarOptionsModal.style.display = 'none';
+});
+
+btnAvatarChange.addEventListener('click', () => {
+    avatarOptionsModal.style.display = 'none';
     avatarInput.click();
+});
+
+btnAvatarRemove.addEventListener('click', async () => {
+    avatarOptionsModal.style.display = 'none';
+    const confirmed = await customConfirm("Are you sure you want to remove your profile picture?", "Remove Picture", true);
+    if (!confirmed) return;
+    
+    try {
+        await updateProfile(currentUser, { photoURL: "" });
+        showToast("Profile picture removed.", "success");
+        // Reload avatar view
+        const charCode = currentUser.uid ? (currentUser.uid.charCodeAt(0) + currentUser.uid.charCodeAt(currentUser.uid.length - 1)) : Math.floor(Math.random() * 360);
+        const hueDeg = (charCode * 45) % 360; 
+        
+        avatarPreview.src = 'Default%20logo.png';
+        avatarPreview.style.filter = `hue-rotate(${hueDeg}deg) saturate(1.5)`;
+        
+        const navAvatar = document.querySelector('.nav-avatar');
+        if (navAvatar) {
+            navAvatar.src = 'Default%20logo.png';
+            navAvatar.style.filter = `hue-rotate(${hueDeg}deg) saturate(1.5)`;
+        }
+    } catch (err) {
+        console.error(err);
+        showToast("Failed to remove picture.", "error");
+    }
 });
 
 avatarInput.addEventListener('change', (e) => {
@@ -221,8 +265,8 @@ btnCropUpload.addEventListener('click', () => {
     btnCropUpload.innerText = "Uploading...";
 
     cropper.getCroppedCanvas({
-        width: 200,
-        height: 200,
+        width: 800,
+        height: 800,
     }).toBlob(async (blob) => {
         try {
             avatarStatus.style.color = '#fff';
@@ -245,16 +289,20 @@ btnCropUpload.addEventListener('click', () => {
             });
             
             avatarPreview.src = data.secure_url;
+            avatarPreview.style.filter = ''; // Reset filter so user's uploaded picture isn't tinted
             avatarStatus.style.color = 'var(--accent-cyan)';
             avatarStatus.innerText = 'Picture updated successfully!';
 
             // Update navbar preview locally
             const navAvatar = document.querySelector('.nav-avatar');
-            if (navAvatar) navAvatar.src = data.secure_url;
+            if (navAvatar) {
+                navAvatar.src = data.secure_url;
+                navAvatar.style.filter = ''; // Reset filter
+            }
 
             // Close modal
             cropperModal.style.display = 'none';
-            cropper.destroy();
+            if (cropper) cropper.destroy();
         } catch (err) {
             console.error(err);
             avatarStatus.style.color = '#ff6666';
@@ -263,7 +311,7 @@ btnCropUpload.addEventListener('click', () => {
             btnCropUpload.disabled = false;
             btnCropUpload.innerText = "Upload Avatar";
         }
-    }, 'image/jpeg');
+    }, 'image/jpeg', 0.95);
 });
 
 // Edit Profile Logic
@@ -411,25 +459,32 @@ async function loadMyUploads(user) {
         const daysActive = Math.max(1, Math.floor((Date.now() - joinDateMs) / (1000 * 60 * 60 * 24)));
         document.getElementById('stat-days').innerText = daysActive;
 
+        let totalUpvotes = 0;
+
         validDocs.forEach(item => {
-                hasUploads = true;
-                const docId = item.document.name.split('/').pop();
-                const fields = item.document.fields;
-                
-                const title = fields.title?.stringValue || 'Untitled';
-                const uploadDate = fields.createdAt?.timestampValue ? new Date(fields.createdAt.timestampValue).toLocaleDateString() : 'Unknown';
-                
-                const card = document.createElement('div');
-                card.className = 'my-upload-card';
-                card.innerHTML = `
-                    <div>
-                        <h4 style="color: var(--accent-cyan); margin-bottom: 0.25rem;">${title}</h4>
-                        <span style="font-size: 0.8rem; color: var(--text-secondary);">Uploaded: ${uploadDate}</span>
-                    </div>
-                    <button class="btn btn-delete-paper" data-id="${docId}" style="background: transparent; border: 1px solid #ff6666; color: #ff6666; padding: 0.3rem 0.8rem; font-size: 0.8rem;">Delete</button>
-                `;
-                container.appendChild(card);
+            hasUploads = true;
+            const docId = item.document.name.split('/').pop();
+            const fields = item.document.fields;
+            
+            const title = fields.title?.stringValue || 'Untitled';
+            const uploadDate = fields.createdAt?.timestampValue ? new Date(fields.createdAt.timestampValue).toLocaleDateString() : 'Unknown';
+            
+            // Aggregate upvotes
+            totalUpvotes += fields.upvotesCount?.integerValue ? parseInt(fields.upvotesCount.integerValue, 10) : 0;
+            
+            const card = document.createElement('div');
+            card.className = 'my-upload-card';
+            card.innerHTML = `
+                <div>
+                    <h4 style="color: var(--accent-cyan); margin-bottom: 0.25rem;">${title}</h4>
+                    <span style="font-size: 0.8rem; color: var(--text-secondary);">Uploaded: ${uploadDate}</span>
+                </div>
+                <button class="btn btn-delete-paper" data-id="${docId}" style="background: transparent; border: 1px solid #ff6666; color: #ff6666; padding: 0.3rem 0.8rem; font-size: 0.8rem;">Delete</button>
+            `;
+            container.appendChild(card);
         });
+
+        document.getElementById('stat-upvotes').innerText = totalUpvotes;
 
         if (!hasUploads) {
             container.innerHTML = '<p style="color: var(--text-secondary);">You have not uploaded any research papers yet.</p>';
@@ -548,3 +603,50 @@ document.getElementById('btn-delete-account').addEventListener('click', async ()
         }
     }
 });
+
+// --- SAVED CONTENT LOGIC ---
+async function fetchSavedContent(user) {
+    const draftsContainer = document.getElementById('saved-drafts-container');
+    
+    if (!draftsContainer) return;
+    
+    draftsContainer.innerHTML = '<div class="spinner" style="margin:1rem auto; border-left-color: var(--accent-cyan); width: 24px; height: 24px;"></div>';
+    
+    const projectId = "hydrohub-215";
+    const token = await user.getIdToken();
+    
+    try {
+        // Fetch Drafts
+        const draftsUrl = `https://firestore.googleapis.com/v1/projects/${projectId}/databases/(default)/documents/users/${user.uid}/drafts`;
+        const draftsRes = await fetch(draftsUrl, { headers: { 'Authorization': `Bearer ${token}` }});
+        if (draftsRes.ok) {
+            const draftsData = await draftsRes.json();
+            if (draftsData.documents && draftsData.documents.length > 0) {
+                draftsContainer.innerHTML = '';
+                draftsData.documents.forEach(doc => {
+                    const fields = doc.fields;
+                    const title = fields.title?.stringValue || 'Untitled Draft';
+                    const date = fields.createdAt?.timestampValue ? new Date(fields.createdAt.timestampValue).toLocaleDateString() : 'Recently';
+                    
+                    draftsContainer.innerHTML += `
+                        <div style="background: rgba(255,255,255,0.05); padding: 1rem; border-radius: 8px; margin-bottom: 0.5rem; display: flex; justify-content: space-between; align-items: center;">
+                            <div>
+                                <h4 style="margin-bottom: 0.2rem; color: #fff;">${title}</h4>
+                                <span style="font-size: 0.8rem; color: #888;">Saved: ${date}</span>
+                            </div>
+                            <button class="btn btn-outline" style="padding: 0.3rem 0.8rem; font-size: 0.8rem;">Edit</button>
+                        </div>
+                    `;
+                });
+            } else {
+                draftsContainer.innerHTML = '<p style="color: var(--text-secondary); font-size: 0.9rem;">You have no unpublished drafts.</p>';
+            }
+        } else {
+            draftsContainer.innerHTML = '<p style="color: #ff6666; font-size: 0.9rem;">Failed to load drafts.</p>';
+        }
+        
+    } catch (err) {
+        console.error("Failed to load saved content", err);
+        draftsContainer.innerHTML = '<p style="color: #ff6666; font-size: 0.9rem;">Error loading content.</p>';
+    }
+}
