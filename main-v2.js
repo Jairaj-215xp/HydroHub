@@ -258,6 +258,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const chatbotToggle = document.getElementById('chatbot-toggle');
     const chatbotPanel = document.getElementById('chatbot-panel');
     const chatbotClose = document.getElementById('chatbot-close');
+    const chatbotSave = document.getElementById('chatbot-save');
     const chatInputForm = document.getElementById('chat-input-form');
     const chatInput = document.getElementById('chat-input');
     const chatMessages = document.getElementById('chat-messages');
@@ -267,6 +268,61 @@ document.addEventListener('DOMContentLoaded', () => {
     chatbotToggle.addEventListener('click', () => {
         chatbotPanel.classList.remove('hidden');
     });
+
+    
+    if (chatbotSave) {
+        chatbotSave.addEventListener('click', async () => {
+            if (!auth || !auth.currentUser) {
+                showToast("Please log in to save conversations.", "error");
+                return;
+            }
+            if (chatHistory.length === 0) {
+                showToast("No conversation to save.", "error");
+                return;
+            }
+            
+            try {
+                const token = await auth.currentUser.getIdToken();
+                const url = `https://firestore.googleapis.com/v1/projects/hydrohub-215/databases/(default)/documents/users/${auth.currentUser.uid}/bot_conversations`;
+                
+                // Get the first user prompt as title, max 50 chars
+                let title = "New Conversation";
+                for (let msg of chatHistory) {
+                    if (msg.role === 'user' && msg.parts && msg.parts.length > 0) {
+                        title = msg.parts[0].text.substring(0, 50);
+                        if (msg.parts[0].text.length > 50) title += '...';
+                        break;
+                    }
+                }
+                
+                const payload = {
+                    fields: {
+                        timestamp: { stringValue: new Date().toISOString() },
+                        title: { stringValue: title },
+                        history: { stringValue: JSON.stringify(chatHistory) }
+                    }
+                };
+                
+                const res = await fetch(url, {
+                    method: 'POST',
+                    headers: {
+                        'Authorization': `Bearer ${token}`,
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify(payload)
+                });
+                
+                if (res.ok) {
+                    showToast("Conversation saved successfully!", "success");
+                } else {
+                    throw new Error("Failed to save");
+                }
+            } catch(e) {
+                console.error("Error saving conversation", e);
+                showToast("Error saving conversation.", "error");
+            }
+        });
+    }
 
     chatbotClose.addEventListener('click', () => {
         chatbotPanel.classList.add('hidden');
@@ -502,3 +558,72 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     fetchResearchPapers();
+
+// Ask a Doubt Form handler
+document.addEventListener('DOMContentLoaded', () => {
+    const contactForm = document.getElementById('contact-form');
+    if (contactForm) {
+        contactForm.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            
+            const name = document.getElementById('name').value.trim();
+            const email = document.getElementById('email').value.trim();
+            const message = document.getElementById('message').value.trim();
+            
+            if (!message) return;
+            
+            const btn = contactForm.querySelector('button[type="submit"]');
+            const originalText = btn.innerText;
+            btn.disabled = true;
+            btn.innerText = 'Submitting...';
+            
+            try {
+                const projectId = "hydrohub-215";
+                const firestoreBase = `https://firestore.googleapis.com/v1/projects/${projectId}/databases/(default)/documents`;
+                
+                const payload = {
+                    fields: {
+                        message: { stringValue: message },
+                        authorName: { stringValue: name || 'Anonymous' },
+                        email: { stringValue: email },
+                        createdAt: { timestampValue: new Date().toISOString() }
+                    }
+                };
+
+                let token = null;
+                if (auth.currentUser) {
+                    token = await auth.currentUser.getIdToken();
+                    payload.fields.authorId = { stringValue: auth.currentUser.uid };
+                }
+
+                const headers = { 'Content-Type': 'application/json' };
+                if (token) {
+                    headers['Authorization'] = `Bearer ${token}`;
+                }
+
+                const res = await fetch(`${firestoreBase}/doubts`, {
+                    method: 'POST',
+                    headers: headers,
+                    body: JSON.stringify(payload)
+                });
+
+                if (!res.ok) throw new Error('Failed to post doubt');
+                
+                contactForm.reset();
+                
+                // We don't have showToast imported here, so we will use an alert or just change button text
+                btn.innerText = 'Question Posted!';
+                setTimeout(() => {
+                    window.location.href = 'forum.html';
+                }, 1000);
+            } catch (error) {
+                console.error(error);
+                btn.innerText = 'Error! Try Again';
+                setTimeout(() => {
+                    btn.disabled = false;
+                    btn.innerText = originalText;
+                }, 3000);
+            }
+        });
+    }
+});

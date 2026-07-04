@@ -1,4 +1,5 @@
 import { auth, db } from './firebase-config.js';
+import { openDocumentViewer } from './ui-utils.js';
 import { onAuthStateChanged, updatePassword, deleteUser, signOut, updateProfile } from "https://www.gstatic.com/firebasejs/10.7.0/firebase-auth.js";
 
 // Initialize Flatpickr for Date of Birth
@@ -128,6 +129,23 @@ async function loadProfile(user) {
             const username = fields.username?.stringValue || 'Unknown';
             
             document.getElementById('profile-name').innerText = name;
+            
+            const handle = fields.username?.stringValue || '';
+            document.getElementById('profile-handle').innerText = handle ? '@' + handle : 'Not Set';
+            document.getElementById('edit-profile-handle').value = handle;
+            
+            if (handle) {
+                document.getElementById('profile-link-preview').style.display = 'block';
+                document.getElementById('preview-handle-text').innerText = handle;
+            } else {
+                document.getElementById('profile-link-preview').style.display = 'none';
+            }
+
+            const followersArr = fields.followers?.arrayValue?.values || [];
+            const followingArr = fields.following?.arrayValue?.values || [];
+            document.getElementById('profile-followers-count').innerText = followersArr.length;
+            document.getElementById('profile-following-count').innerText = followingArr.length;
+            
             document.getElementById('profile-username').innerText = username !== 'Unknown' ? `@${username}` : 'Not Set';
             
             // New Fields
@@ -321,7 +339,7 @@ const btnSaveEdit = document.getElementById('btn-save-edit');
 const editActions = document.getElementById('edit-profile-actions');
 const btnShareProfile = document.getElementById('btn-share-profile');
 
-const profileFields = ['name', 'bio', 'university', 'field-study', 'github', 'linkedin', 'orcid', 'location', 'website', 'dob', 'gender', 'language', 'timezone'];
+const profileFields = ['name', 'handle', 'bio', 'university', 'field-study', 'github', 'linkedin', 'orcid', 'location', 'website', 'dob', 'gender', 'language', 'timezone'];
 
 function toggleEditMode(isEditing) {
     profileFields.forEach(field => {
@@ -353,19 +371,60 @@ if (btnShareProfile) {
     });
 }
 
+async function isHandleTaken(handle, currentUid) {
+    if (!handle) return false;
+    const url = `https://firestore.googleapis.com/v1/projects/hydrohub-215/databases/(default)/documents:runQuery`;
+    const payload = {
+        structuredQuery: {
+            from: [{ collectionId: 'users' }],
+            where: {
+                compositeFilter: {
+                    op: 'AND',
+                    filters: [
+                        { fieldFilter: { field: { fieldPath: 'username' }, op: 'EQUAL', value: { stringValue: handle } } }
+                    ]
+                }
+            }
+        }
+    };
+    try {
+        const token = await auth.currentUser.getIdToken();
+        const res = await fetch(url, { method: 'POST', headers: { 'Authorization': `Bearer ${token}` }, body: JSON.stringify(payload) });
+        if (!res.ok) return false;
+        const data = await res.json();
+        // data[0].document exists if found. Check if the found doc matches the current user.
+        if (data && data.length > 0 && data[0].document) {
+            const foundName = data[0].document.name;
+            if (!foundName.endsWith(`/${currentUid}`)) return true; // Someone else has it
+        }
+        return false;
+    } catch(e) { return false; }
+}
+
 btnSaveEdit.addEventListener('click', async () => {
     try {
         btnSaveEdit.disabled = true;
+        const handleVal = document.getElementById('edit-profile-handle').value.trim().replace(/[^a-zA-Z0-9_]/g, '');
+        if (handleVal) {
+            const taken = await isHandleTaken(handleVal, auth.currentUser.uid);
+            if (taken) {
+                showToast("This handle is already taken.", "error");
+                btnSaveEdit.disabled = false;
+                return;
+            }
+        }
+
         btnSaveEdit.innerText = 'Saving...';
         
         const token = await auth.currentUser.getIdToken();
-        const updateFields = ['name', 'bio', 'university', 'fieldStudy', 'github', 'linkedin', 'orcid', 'location', 'website', 'dob', 'gender', 'language', 'timezone'];
+        const updateFields = ['name', 'username', 'bio', 'university', 'fieldStudy', 'github', 'linkedin', 'orcid', 'location', 'website', 'dob', 'gender', 'language', 'timezone'];
         const maskPaths = updateFields.map(f => `updateMask.fieldPaths=${f}`).join('&');
         const url = `https://firestore.googleapis.com/v1/projects/hydrohub-215/databases/(default)/documents/users/${auth.currentUser.uid}?${maskPaths}`;
         
         const payload = {
             fields: {
                 name: { stringValue: document.getElementById('edit-profile-name').value.trim() },
+                username: { stringValue: document.getElementById('edit-profile-handle').value.trim().replace(/[^a-zA-Z0-9_]/g, '') },
                 bio: { stringValue: document.getElementById('edit-profile-bio').value.trim() },
                 university: { stringValue: document.getElementById('edit-profile-university').value.trim() },
                 fieldStudy: { stringValue: document.getElementById('edit-profile-field-study').value.trim() },
@@ -395,7 +454,13 @@ btnSaveEdit.addEventListener('click', async () => {
         // Update UI
         profileFields.forEach(field => {
             const inputVal = document.getElementById(`edit-profile-${field}`).value.trim();
-            document.getElementById(`profile-${field}`).innerText = inputVal || 'Not Set';
+            if (field === 'handle') {
+                const safeVal = inputVal.replace(/[^a-zA-Z0-9_]/g, '');
+                document.getElementById(`profile-handle`).innerText = safeVal ? '@' + safeVal : 'Not Set';
+                document.getElementById(`profile-username`).innerText = safeVal ? '@' + safeVal : 'Not Set';
+            } else {
+                document.getElementById(`profile-${field}`).innerText = inputVal || 'Not Set';
+            }
         });
         
         toggleEditMode(false);
@@ -468,19 +533,75 @@ async function loadMyUploads(user) {
             
             const title = fields.title?.stringValue || 'Untitled';
             const uploadDate = fields.createdAt?.timestampValue ? new Date(fields.createdAt.timestampValue).toLocaleDateString() : 'Unknown';
+            const uploaderName = fields.uploaderName?.stringValue || 'Unknown User';
+            const fileUrl = fields.fileUrl?.stringValue || '#';
+            const upvotes = fields.upvotesCount?.integerValue || 0;
+            const description = fields.description?.stringValue || 'No description provided.';
             
-            // Aggregate upvotes
-            totalUpvotes += fields.upvotesCount?.integerValue ? parseInt(fields.upvotesCount.integerValue, 10) : 0;
+            totalUpvotes += parseInt(upvotes, 10);
             
+            const isImage = fileUrl.match(/\.(jpeg|jpg|gif|png|webp)$/i) != null;
+            const isVideo = fileUrl.match(/\.(mp4|webm|ogg)$/i) != null;
+            
+            let mediaHtml = '';
+            if (isImage) {
+                mediaHtml = `<div style="margin-bottom: 1rem; margin-top: -1.5rem; margin-left: -1.5rem; margin-right: -1.5rem;"><img src="${fileUrl}" alt="${title}" style="width: 100%; height: 200px; object-fit: cover; border-top-left-radius: 8px; border-top-right-radius: 8px;"></div>`;
+            } else if (isVideo) {
+                mediaHtml = `<div style="margin-bottom: 1rem; margin-top: -1.5rem; margin-left: -1.5rem; margin-right: -1.5rem;"><video src="${fileUrl}" controls style="width: 100%; height: 200px; object-fit: cover; border-top-left-radius: 8px; border-top-right-radius: 8px;"></video></div>`;
+            }
+
             const card = document.createElement('div');
-            card.className = 'my-upload-card';
+            card.className = 'research-card';
+            
+            let descHtml = description;
+            let needsToggle = false;
+            if (description.length > 200) {
+                descHtml = `<span class="desc-short">${description.substring(0, 200)}...</span><span class="desc-full" style="display:none;">${description}</span><a href="#" class="read-more-btn" style="color:var(--accent-cyan); cursor:pointer; font-size:0.85rem; display:block; margin-top:0.5rem; text-decoration:none;">Read More</a>`;
+                needsToggle = true;
+            }
+
             card.innerHTML = `
-                <div>
-                    <h4 style="color: var(--accent-cyan); margin-bottom: 0.25rem;">${title}</h4>
-                    <span style="font-size: 0.8rem; color: var(--text-secondary);">Uploaded: ${uploadDate}</span>
+                ${mediaHtml}
+                <div class="card-content">
+                    <h3 style="margin-top: ${mediaHtml ? '1rem' : '0'}">${title}</h3>
+                    <div class="research-authors">By: ${uploaderName}</div>
+                    <div class="research-abstract">
+                        ${descHtml}
+                    </div>
                 </div>
-                <button class="btn btn-delete-paper" data-id="${docId}" style="background: transparent; border: 1px solid #ff6666; color: #ff6666; padding: 0.3rem 0.8rem; font-size: 0.8rem;">Delete</button>
+                <div class="card-footer" style="display: flex; justify-content: space-between; align-items: center; margin-top: 1.5rem; border-top: 1px solid rgba(255,255,255,0.05); padding-top: 1rem;">
+                    <button class="btn btn-outline btn-view-report" data-url="${fileUrl}" data-title="${title}" style="padding: 0.5rem 1rem; font-size: 0.9rem;">View Report</button>
+                    <div style="display: flex; gap: 0.5rem; align-items: center;">
+                        <button class="btn btn-delete-paper" data-id="${docId}" style="background: transparent; border: 1px solid #ff6666; color: #ff6666; padding: 0.3rem 0.8rem; font-size: 0.8rem; border-radius: 20px; cursor: pointer; transition: all 0.2s ease;">Delete</button>
+                    </div>
+                </div>
             `;
+            
+            if (needsToggle) {
+                const btn = card.querySelector('.read-more-btn');
+                const shortText = card.querySelector('.desc-short');
+                const fullText = card.querySelector('.desc-full');
+                btn.addEventListener('click', (e) => {
+                    e.preventDefault();
+                    if (fullText.style.display === 'none') {
+                        fullText.style.display = 'inline';
+                        shortText.style.display = 'none';
+                        btn.innerText = 'Show Less';
+                    } else {
+                        fullText.style.display = 'none';
+                        shortText.style.display = 'inline';
+                        btn.innerText = 'Read More';
+                    }
+                });
+            }
+
+            const viewBtn = card.querySelector('.btn-view-report');
+            if (viewBtn) {
+                viewBtn.addEventListener('click', () => {
+                    openDocumentViewer(fileUrl, title);
+                });
+            }
+
             container.appendChild(card);
         });
 
@@ -649,4 +770,190 @@ async function fetchSavedContent(user) {
         console.error("Failed to load saved content", err);
         draftsContainer.innerHTML = '<p style="color: #ff6666; font-size: 0.9rem;">Error loading content.</p>';
     }
+}
+
+
+// ==========================================
+// MOCK LINK COPY LOGIC
+// ==========================================
+const btnCopyLink = document.getElementById('btn-copy-link');
+if (btnCopyLink) {
+    btnCopyLink.addEventListener('click', (e) => {
+        e.preventDefault();
+        const handle = document.getElementById('preview-handle-text').innerText;
+        const url = `${window.location.origin}/@${handle}`;
+        navigator.clipboard.writeText(url).then(() => {
+            const originalText = btnCopyLink.innerText;
+            btnCopyLink.innerText = '[Copied!]';
+            setTimeout(() => { btnCopyLink.innerText = originalText; }, 2000);
+        });
+    });
+}
+
+// ==========================================
+// NOTIFICATIONS LOGIC
+// ==========================================
+async function loadNotifications(user) {
+    const container = document.getElementById('notifications-container');
+    if (!container) return;
+    try {
+        const token = await user.getIdToken();
+        const url = `https://firestore.googleapis.com/v1/projects/hydrohub-215/databases/(default)/documents/users/${user.uid}/notifications`;
+        
+        const res = await fetch(url, {
+            headers: { 'Authorization': `Bearer ${token}` }
+        });
+        
+        if (res.ok) {
+            const data = await res.json();
+            const docs = data.documents || [];
+            
+            if (docs.length === 0) {
+                container.innerHTML = '<p style="color: var(--text-secondary);">No new notifications.</p>';
+                return;
+            }
+            
+            container.innerHTML = '';
+            let unreadCount = 0;
+            
+            docs.forEach(doc => {
+                const id = doc.name.split('/').pop();
+                const fields = doc.fields;
+                const message = fields.message?.stringValue || 'You have a new notification';
+                const read = fields.read?.booleanValue || false;
+                const link = fields.link?.stringValue || '#';
+                
+                if (!read) unreadCount++;
+                
+                const notifEl = document.createElement('div');
+                notifEl.style.padding = '1rem';
+                notifEl.style.background = read ? 'rgba(255,255,255,0.02)' : 'rgba(108, 92, 231, 0.1)';
+                notifEl.style.border = read ? '1px solid rgba(255,255,255,0.05)' : '1px solid var(--accent-purple)';
+                notifEl.style.borderRadius = '8px';
+                notifEl.style.cursor = 'pointer';
+                notifEl.style.transition = 'all 0.2s';
+                
+                notifEl.innerHTML = `<p style="margin:0; ${read ? 'color: var(--text-secondary);' : 'color: white;'}">${message}</p>`;
+                notifEl.onclick = () => { window.location.href = link; };
+                
+                container.appendChild(notifEl);
+            });
+            
+            const badge = document.getElementById('notif-badge');
+            if (badge) {
+                if (unreadCount > 0) {
+                    badge.style.display = 'inline-block';
+                    badge.innerText = unreadCount;
+                } else {
+                    badge.style.display = 'none';
+                }
+            }
+        }
+    } catch(e) {
+        console.error("Error loading notifications:", e);
+    }
+}
+
+const btnMarkRead = document.getElementById('btn-mark-read');
+if (btnMarkRead) {
+    btnMarkRead.addEventListener('click', () => {
+        showToast("All notifications marked as read.", "info");
+        const badge = document.getElementById('notif-badge');
+        if (badge) badge.style.display = 'none';
+        
+        const container = document.getElementById('notifications-container');
+        Array.from(container.children).forEach(child => {
+            child.style.background = 'rgba(255,255,255,0.02)';
+            child.style.border = '1px solid rgba(255,255,255,0.05)';
+            child.querySelector('p').style.color = 'var(--text-secondary)';
+        });
+    });
+}
+
+// Ensure loadNotifications is called
+onAuthStateChanged(auth, async (user) => {
+    if (user) {
+        loadNotifications(user);
+    }
+});
+
+// ==========================================
+// DATA EXPORT LOGIC
+// ==========================================
+const btnExportData = document.getElementById('btn-export-data');
+if (btnExportData) {
+    btnExportData.addEventListener('click', async () => {
+        if (!currentUser) return;
+        
+        btnExportData.disabled = true;
+        btnExportData.innerText = 'Compiling Data...';
+        const msg = document.getElementById('export-msg');
+        msg.innerText = '';
+        
+        try {
+            const token = await currentUser.getIdToken();
+            const zip = new JSZip();
+            
+            // 1. Fetch Profile Data
+            const profileRes = await fetch(`https://firestore.googleapis.com/v1/projects/hydrohub-215/databases/(default)/documents/users/${currentUser.uid}`, {
+                headers: { 'Authorization': `Bearer ${token}` }
+            });
+            if (profileRes.ok) {
+                const profileData = await profileRes.json();
+                zip.file("profile.json", JSON.stringify(profileData, null, 2));
+            }
+            
+            // 2. Fetch Uploaded Papers
+            const papersUrl = `https://firestore.googleapis.com/v1/projects/hydrohub-215/databases/(default)/documents:runQuery`;
+            const papersPayload = {
+                structuredQuery: {
+                    from: [{ collectionId: 'community_research' }],
+                    where: {
+                        compositeFilter: {
+                            op: 'AND',
+                            filters: [
+                                { fieldFilter: { field: { fieldPath: 'uploaderId' }, op: 'EQUAL', value: { stringValue: currentUser.uid } } }
+                            ]
+                        }
+                    }
+                }
+            };
+            const papersRes = await fetch(papersUrl, { method: 'POST', headers: { 'Authorization': `Bearer ${token}` }, body: JSON.stringify(papersPayload) });
+            if (papersRes.ok) {
+                const papersData = await papersRes.json();
+                zip.file("uploaded_papers.json", JSON.stringify(papersData, null, 2));
+            }
+            
+            // Generate ZIP
+            const blob = await zip.generateAsync({ type: "blob" });
+            const downloadUrl = window.URL.createObjectURL(blob);
+            const a = document.createElement("a");
+            a.style.display = "none";
+            a.href = downloadUrl;
+            a.download = `HydroHub_Data_${currentUser.uid}.zip`;
+            document.body.appendChild(a);
+            a.click();
+            window.URL.revokeObjectURL(downloadUrl);
+            
+            msg.style.color = 'var(--accent-cyan)';
+            msg.innerText = 'Data successfully exported!';
+        } catch(e) {
+            console.error(e);
+            msg.style.color = '#ff6666';
+            msg.innerText = 'Failed to export data.';
+        } finally {
+            btnExportData.disabled = false;
+            btnExportData.innerText = 'Download My Data';
+        }
+    });
+}
+
+
+
+
+const closeTranscriptModal = document.getElementById('close-transcript-modal');
+if (closeTranscriptModal) {
+    closeTranscriptModal.addEventListener('click', () => {
+        document.getElementById('bot-transcript-modal').style.display = 'none';
+    });
 }

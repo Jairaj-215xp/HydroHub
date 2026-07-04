@@ -132,15 +132,37 @@ export function openDocumentViewer(url) {
     iframeContainer.style.height = '100%';
     iframeContainer.style.overflow = 'hidden';
     iframeContainer.style.padding = '0';
+    iframeContainer.style.display = 'flex';
+    iframeContainer.style.alignItems = 'center';
+    iframeContainer.style.justifyContent = 'center';
     
-    const iframe = document.createElement('iframe');
-    iframe.src = url;
-    iframe.style.width = '100%';
-    iframe.style.height = '100%';
-    iframe.style.border = 'none';
-    iframe.style.borderRadius = '16px';
+    const isImage = url.match(/\.(jpeg|jpg|gif|png|webp|svg)(\?.*)?$/i) != null;
+    const isVideo = url.match(/\.(mp4|webm|ogg)(\?.*)?$/i) != null;
     
-    iframeContainer.appendChild(iframe);
+    let mediaElement;
+    if (isImage) {
+        mediaElement = document.createElement('img');
+        mediaElement.src = url;
+        mediaElement.style.width = '100%';
+        mediaElement.style.height = '100%';
+        mediaElement.style.objectFit = 'contain';
+    } else if (isVideo) {
+        mediaElement = document.createElement('video');
+        mediaElement.src = url;
+        mediaElement.controls = true;
+        mediaElement.style.width = '100%';
+        mediaElement.style.height = '100%';
+        mediaElement.style.objectFit = 'contain';
+    } else {
+        mediaElement = document.createElement('iframe');
+        mediaElement.src = url;
+        mediaElement.style.width = '100%';
+        mediaElement.style.height = '100%';
+        mediaElement.style.border = 'none';
+    }
+    mediaElement.style.borderRadius = '16px';
+    
+    iframeContainer.appendChild(mediaElement);
     
     overlay.appendChild(header);
     overlay.appendChild(iframeContainer);

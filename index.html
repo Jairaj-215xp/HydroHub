@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
@@ -20,9 +20,9 @@
     <div class="glow-orb orb-1"></div>
     <div class="glow-orb orb-2"></div>
 
-    <nav class="navbar hidden-element">
+            <nav class="navbar">
         <div class="nav-container">
-            <a href="#" class="logo">Hydro<span>Hub</span></a>
+            <a href="index.html" class="logo">Hydro<span>Hub</span></a>
             <ul class="nav-links">
                 <li><a href="index.html">Home</a></li>
                 <li><a href="index.html#hub">Global Info</a></li>
@@ -35,6 +35,7 @@
                           <a href="community-research.html">Community Research</a>
                       </div>
                   </li>
+                <li><a href="forum.html">Q&A Forum</a></li>
                 <li><a href="index.html#about">About</a></li>
                 <li><a href="index.html#contact">Contact</a></li>
                 <li id="nav-auth-item" style="visibility: hidden;"><a href="#" id="nav-login-btn" style="color: var(--accent-cyan); font-weight: bold;">Login / Sign Up</a></li>
@@ -249,6 +250,7 @@
                         <textarea id="message" rows="4" placeholder="How does a fuel cell work?" required></textarea>
                     </div>
                     <button type="submit" class="btn btn-primary">Submit Doubt</button>
+                    <a href="forum.html" style="display:block; text-align:center; margin-top: 1rem; color: var(--accent-cyan); text-decoration: none;">View all community doubts ?</a>
                 </form>
             </div>
         </section>
@@ -266,7 +268,8 @@
                         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="width: 20px; height: 20px;"><path d="M12 8V4H8"/><rect width="16" height="12" x="4" y="8" rx="2"/><path d="M2 14h2"/><path d="M20 14h2"/><path d="M15 13v2"/><path d="M9 13v2"/></svg>
                         <h3>Hydrobot</h3>
                     </div>
-                    <button id="chatbot-close" class="chatbot-close">Ã¢Å“â€¢</button>
+                    <button id="chatbot-save" class="chatbot-save" style="background: none; border: none; color: var(--accent-cyan); cursor: pointer; margin-right: 10px; padding: 0.2rem;" title="Save Conversation"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"></path><polyline points="17 21 17 13 7 13 7 21"></polyline><polyline points="7 3 7 8 15 8"></polyline></svg></button>
+                      <button id="chatbot-close" class="chatbot-close" style="background: none; border: none; color: white; cursor: pointer; padding: 0.2rem;"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg></button>
                 </div>
             <div class="chat-messages" id="chat-messages">
                 <div class="message ai-message">
@@ -290,9 +293,12 @@
     </footer>
 
     <!-- Custom JS -->
-    <script type="module" src="main-v2.js"></script>
+    <script type="module" src="main-v2.js?v=2"></script>
     <script type="module" src="firebase-config.js"></script>
     <script type="module" src="auth.js?v=4"></script>
 </body>
 </html>
+
+
+
 
