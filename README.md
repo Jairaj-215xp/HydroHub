@@ -1,78 +1,75 @@
-# HydroHub 🔵⚗️
-
-**The ultimate global hub for hydrogen fuel information, daily news, ideas, and basics.**
-
-HydroHub is a web platform dedicated to accelerating the clean energy transition by making hydrogen fuel knowledge accessible to everyone — from industry professionals and researchers to students and clean energy enthusiasts.
-
-🔗 **Live Repo:** [github.com/Jairaj-215xp/HydroHub](https://github.com/Jairaj-215xp/HydroHub)
+<div align="center">
+  <h1>HydroHub 🔵⚗️</h1>
+  <p><b>The ultimate global hub for hydrogen fuel information, daily news, ideas, and research.</b></p>
+  <p>
+    <a href="https://github.com/Jairaj-215xp/HydroHub">Live Repository</a>
+  </p>
+</div>
 
 ---
 
+HydroHub is an expansive, modern web platform dedicated to accelerating the clean energy transition. It makes hydrogen fuel knowledge accessible to everyone — from industry professionals and researchers to students and clean energy enthusiasts.
+
 ## ✨ Features
 
-- **Hydrogen Basics** — Clear breakdowns of Green, Blue, and Gray hydrogen production methods.
-- **Global Information Hub** — Key stats and metrics on global hydrogen adoption, production, and projects.
-- **Daily News & Ideas** — Aggregated, filterable news feed pulling from multiple sources (GDELT, Google News, The Guardian, renewable energy feeds, and more).
-- **Academic Research** — Curated shortcuts to major research databases (Google Scholar, arXiv, PubMed, ScienceDirect, IEEE Xplore, ResearchGate, DOAJ, OSTI.gov, SpringerLink).
-- **Community Research** — A space for community-submitted hydrogen-related research and content.
-- **Hydrobot AI Assistant** — An in-browser chatbot that answers questions about hydrogen fuel, fuel cells, and green energy technology.
-- **User Accounts** — Sign up, log in, manage your profile, and verify your account (powered by Firebase Auth).
-- **Bookmarks & Drafts** — Save articles/ideas for later and manage draft content.
-- **Content Upload** — Upload and contribute hydrogen-related content/research to the platform.
-- **Contact & Ask a Doubt** — A contact form for users to reach out with hydrogen-related questions.
+- 🔋 **Hydrogen Basics** — Clear, structured breakdowns of Green, Blue, Gray, and Pink hydrogen production methods.
+- 🌍 **Global Information Hub** — Key metrics and up-to-date stats on global hydrogen adoption and massive infrastructure projects.
+- 📰 **Daily News & Ideas** — Aggregated, filterable news feed pulling from major global sources (GDELT, Google News, The Guardian, and dedicated renewable energy feeds).
+- 📚 **Academic & Community Research** — Curated shortcuts to major databases (Google Scholar, arXiv, PubMed, etc.) and a dedicated space for community-submitted research.
+- 🤖 **Hydrobot AI Assistant** — An intelligent, embedded in-browser chatbot that brainstorms and answers complex questions about hydrogen fuel, fuel cells, and green energy technology.
+- 🔐 **Robust User Authentication** — Secure login and signup system powered by Firebase, featuring email verification, Google OAuth, and secure password resets with custom UI.
+- 👤 **Personalized Dashboards** — A comprehensive "My Account" page to manage your public profile handle, bio, and social links.
+- 💾 **Saved Content & Bot Chats** — Bookmark articles, manage research drafts, and automatically save (and review or delete) interactive transcripts of your conversations with Hydrobot.
 
 ---
 
 ## 🛠️ Tech Stack
 
-| Layer            | Technology                          |
+HydroHub leverages a lightweight but powerful stack to deliver a fast, app-like experience without the bloat of heavy front-end frameworks.
+
+| Layer            | Technology |
 |-------------------|--------------------------------------|
-| Frontend          | HTML5, CSS3, Vanilla JavaScript (ES Modules) |
-| Backend / Auth    | Firebase (Authentication, likely Firestore/Storage) |
-| Data              | JSON-based news feeds (GDELT, Google News, Guardian, renewable energy & space news) |
-| Utility Scripts   | Python (`fix.py`) |
-| AI Assistant      | Hydrobot chatbot integration |
+| **Frontend**      | HTML5, CSS3, Vanilla JavaScript (ES6 Modules) |
+| **Backend & Auth**| Firebase (Authentication, Firestore Database, Storage) |
+| **Data**          | JSON-based feeds (GDELT, Google News, Guardian, Renewable Energy feeds) |
+| **Styling**       | Custom CSS with modern Glassmorphism, CSS Variables, and responsive Flex/Grid layouts |
 
 ---
 
 ## 📂 Project Structure
 
-```
+The project is cleanly organized into modular directories for scalability:
+
+```text
 HydroHub/
-├── index.html                  # Landing page (Basics, Hub, News, Research, About, Contact)
-├── index.css                   # Landing page styling
-├── main-v2.js                  # Core site logic / UI initialization
-├── script.js                   # Additional site scripts
-├── ui-utils.js                 # Shared UI helper functions
+├── index.html                  # Landing page (Basics, Hub, News, Research, Contact)
+├── account.html                # User dashboard (Profile, Saved Content, etc.)
+├── bot-chats.html              # Dedicated page to view saved AI transcripts
+├── bookmarks.html              # Saved news and research articles
+├── community-research.html     # Community-submitted research
+├── drafts.html                 # Manage draft content
+├── forum.html                  # Q&A Forum
+├── info.html                   # SimLab / Interactive learning section
+├── profile-setup.html          # New user onboarding flow
+├── upload.html                 # Content contribution page
+├── verify.html                 # Email verification roadblock
 │
-├── auth.js                     # Firebase authentication logic
-├── firebase-config.js          # Firebase project configuration
-├── env.example.js              # Example environment/config variables
+├── css/                        # Global and page-specific stylesheets
+│   ├── index.css
+│   └── info.css
 │
-├── account.html / account.js   # User account management
-├── profile-setup.html / .js    # Profile setup flow
-├── verify.html / verify.js     # Account verification
+├── js/                         # Frontend logic and Firebase config
+│   ├── main-v2.js              # Core site logic & UI initializations
+│   ├── auth.js                 # Centralized Auth logic & Modals
+│   ├── account.js              # Dashboard data loading and profile management
+│   ├── bot-chats.js            # Bot transcript loading and deletion logic
+│   ├── firebase-config.js      # Firebase SDK initialization
+│   ├── ui-utils.js             # Reusable UI components (Toasts, Modals)
+│   └── ... (other page scripts)
 │
-├── bookmarks.html / bookmarks-v2.js   # Saved content
-├── drafts.html / drafts.js            # Draft management
-├── upload.html / upload.js            # Content upload
-│
-├── info.html / info.css / info.js     # SimLab / info section
-├── community-research.html            # Community research page
-│
-├── gdelt.json                  # GDELT news feed data
-├── google_news.json            # Google News feed data
-├── guardian.json                # Guardian news feed data
-├── re_news.json                # Renewable energy news feed data
-├── space_news.json             # Space news feed data
-├── h2view.json                 # Hydrogen-view data feed
-│
-├── fix.py                      # Python utility script
-├── test_fetch.js               # Fetch/testing script
-│
-├── hydrogen_car.png            # Asset
-├── hydrogen_plant.png          # Asset
-└── Default logo.png            # Asset
+├── assets/                     # Images, SVGs, and branding assets
+├── data/                       # Static JSON files for news feeds and historical data
+└── scripts/                    # Archived Python/JS utility scripts for bulk updates
 ```
 
 ---
@@ -80,9 +77,9 @@ HydroHub/
 ## 🚀 Getting Started
 
 ### Prerequisites
-- A modern web browser
-- A [Firebase](https://firebase.google.com/) project (for authentication and any backend features)
-- (Optional) A local static server to avoid CORS/module-loading issues, e.g. [Live Server](https://marketplace.visualstudio.com/items?itemName=ritwickdey.LiveServer) or Python's built-in server
+- A modern web browser (Chrome, Firefox, Safari, Edge).
+- A [Firebase](https://firebase.google.com/) project (for Authentication and Firestore).
+- A local static server (e.g., VS Code [Live Server](https://marketplace.visualstudio.com/items?itemName=ritwickdey.LiveServer) or Python's `http.server`) to allow ES6 Module imports to function correctly.
 
 ### Setup
 
@@ -93,63 +90,39 @@ HydroHub/
    ```
 
 2. **Configure Firebase**
-   - Copy `env.example.js` and rename/fill it with your own Firebase project credentials.
-   - Update `firebase-config.js` with your Firebase config (API key, project ID, auth domain, etc.).
-   - ⚠️ Never commit your real API keys/credentials — keep them out of version control.
+   - Create a file named `env.js` in the `js/` directory (you can use `js/env.example.js` as a template).
+   - Export your Firebase config variables (API key, project ID, auth domain, etc.).
+   - ⚠️ **Important:** Never commit your `env.js` with real API keys to version control. It is ignored in `.gitignore`.
 
-3. **Run locally**
-
+3. **Run Locally**
    Using Python:
    ```bash
    python -m http.server 8000
    ```
    Then open `http://localhost:8000` in your browser.
 
-   Or simply open `index.html` directly in your browser (some features like Firebase Auth and ES module imports may require a local server to work correctly).
-
----
-
-## 🧩 Key Pages
-
-| Page | Description |
-|------|-------------|
-| `index.html` | Main landing page — hydrogen basics, global stats, news feed, research links |
-| `info.html` | SimLab / additional hydrogen info |
-| `community-research.html` | Community-submitted research |
-| `account.html` | User account dashboard |
-| `profile-setup.html` | New user profile setup |
-| `verify.html` | Email/account verification |
-| `bookmarks.html` | Saved articles and content |
-| `drafts.html` | Draft content management |
-| `upload.html` | Upload research/content |
-
 ---
 
 ## 🤝 Contributing
 
-Contributions, issues, and feature requests are welcome!
+Contributions, issues, and feature requests are always welcome!
 
-1. Fork the project
-2. Create your feature branch (`git checkout -b feature/AmazingFeature`)
-3. Commit your changes (`git commit -m 'Add some AmazingFeature'`)
-4. Push to the branch (`git push origin feature/AmazingFeature`)
-5. Open a Pull Request
+1. Fork the project.
+2. Create your feature branch (`git checkout -b feature/AmazingFeature`).
+3. Commit your changes (`git commit -m 'Add some AmazingFeature'`).
+4. Push to the branch (`git push origin feature/AmazingFeature`).
+5. Open a Pull Request.
 
 ---
 
 ## 📧 Contact
 
 Created and maintained by **Jairaj Sapkal**.
-
-- Email: [sapkaljairaj215sm@gmail.com](mailto:sapkaljairaj215sm@gmail.com)
-- GitHub: [@Jairaj-215xp](https://github.com/Jairaj-215xp)
-
----
-
-## 📄 License
-
-This project currently has no license specified. Consider adding one (e.g., MIT) if you plan to open it up for contributions or reuse.
+- **Email:** [sapkaljairaj215sm@gmail.com](mailto:sapkaljairaj215sm@gmail.com)
+- **GitHub:** [@Jairaj-215xp](https://github.com/Jairaj-215xp)
 
 ---
 
-*HydroHub — Accelerating the Clean Energy Transition, one molecule at a time.* ⚡
+<div align="center">
+  <i>HydroHub — Accelerating the Clean Energy Transition, one molecule at a time. ⚡</i>
+</div>
