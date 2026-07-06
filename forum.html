@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Q&A Forum | HydrogenHub</title>
-    <link rel="stylesheet" href="index.css">
+    <link rel="stylesheet" href="css/index.css">
     <style>
         @keyframes slideInDown {
             from { opacity: 0; transform: translateY(-30px); }
@@ -206,10 +206,13 @@
 
     <!-- Inject Auth Modal logic so the navbar works correctly -->
     <script>window.addEventListener('error', function(e) { document.getElementById('error-display').innerText += e.message + ' | '; });</script>
-    <script type="module" src="firebase-config.js"></script>
-    <script type="module" src="auth.js?v=4"></script>
-    <script type="module" src="forum.js?v=4"></script>
+    <script type="module" src="js/firebase-config.js"></script>
+    <script type="module" src="js/auth.js?v=6"></script>
+    <script type="module" src="js/forum.js?v=4"></script>
 </body>
 </html>
+
+
+
 
 

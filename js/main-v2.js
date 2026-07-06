@@ -1,4 +1,4 @@
-if ('scrollRestoration' in history) {
+﻿if ('scrollRestoration' in history) {
     history.scrollRestoration = 'manual';
 }
 
@@ -99,37 +99,37 @@ document.addEventListener('DOMContentLoaded', () => {
         {
             id: 1, type: 'news', title: 'World\'s Largest Green Hydrogen Plant Opens',
             date: 'Today', desc: 'A massive 250MW electrolyser facility has officially commenced operations...',
-            image: 'linear-gradient(rgba(0,0,0,0.3), rgba(0,0,0,0.8)), url("hydrogen_plant.png")',
+            image: 'linear-gradient(rgba(0,0,0,0.3), rgba(0,0,0,0.8)), url("assets/hydrogen_plant.png")',
             link: '#'
         },
         {
             id: 2, type: 'ideas', title: 'Solid-State Hydrogen Storage: A Game Changer?',
             date: 'Today', desc: 'Researchers have published a new concept utilizing magnesium hydride to store hydrogen safely...',
-            image: 'linear-gradient(rgba(0,0,0,0.3), rgba(0,0,0,0.8)), url("hydrogen_car.png")',
+            image: 'linear-gradient(rgba(0,0,0,0.3), rgba(0,0,0,0.8)), url("assets/hydrogen_car.png")',
             link: '#'
         },
         {
             id: 3, type: 'news', title: 'Automakers Commit to Fuel Cell Truck Fleets',
             date: 'Yesterday', desc: 'A consortium of five leading truck manufacturers has signed an accord to transition...',
-            image: 'linear-gradient(rgba(0,0,0,0.3), rgba(0,0,0,0.8)), url("hydrogen_car.png")',
+            image: 'linear-gradient(rgba(0,0,0,0.3), rgba(0,0,0,0.8)), url("assets/hydrogen_car.png")',
             link: '#'
         },
         {
             id: 4, type: 'ideas', title: 'Ocean-Based Electrolysis: Harvesting Fuel at Sea',
             date: 'Yesterday', desc: 'A striking new concept proposes floating offshore platforms that use wave energy...',
-            image: 'linear-gradient(rgba(0,0,0,0.3), rgba(0,0,0,0.8)), url("hydrogen_plant.png")',
+            image: 'linear-gradient(rgba(0,0,0,0.3), rgba(0,0,0,0.8)), url("assets/hydrogen_plant.png")',
             link: '#'
         },
         {
             id: 5, type: 'news', title: 'Aviation Giant Tests Liquid Hydrogen Engine',
             date: '2 Days Ago', desc: 'A modified commercial jet engine ran for 3 hours solely on liquid hydrogen...',
-            image: 'linear-gradient(rgba(0,0,0,0.3), rgba(0,0,0,0.8)), url("hydrogen_car.png")',
+            image: 'linear-gradient(rgba(0,0,0,0.3), rgba(0,0,0,0.8)), url("assets/hydrogen_car.png")',
             link: '#'
         },
         {
             id: 6, type: 'ideas', title: 'Photosynthetic Bacteria: Bio-Hydrogen Production',
             date: '3 Days Ago', desc: 'Synthetic biologists are modifying cyanobacteria strains to continuously excrete hydrogen...',
-            image: 'linear-gradient(rgba(0,0,0,0.3), rgba(0,0,0,0.8)), url("hydrogen_plant.png")',
+            image: 'linear-gradient(rgba(0,0,0,0.3), rgba(0,0,0,0.8)), url("assets/hydrogen_plant.png")',
             link: '#'
         }
     ];
@@ -216,7 +216,7 @@ document.addEventListener('DOMContentLoaded', () => {
                     <span class="news-date">${item.date}</span>
                     <h3 class="news-title">${item.title}</h3>
                     <p class="news-desc">${item.desc}</p>
-                    <a href="${item.link}" target="_blank" class="read-more">Read Full Story <span>→</span></a>
+                    <a href="${item.link}" target="_blank" class="read-more">Read Full Story <span>â†’</span></a>
                 </div>
             `;
             
@@ -464,7 +464,7 @@ document.addEventListener('DOMContentLoaded', () => {
                         </div>
                         <div class="research-footer">
                             <span class="research-date">Published: ${pubYear}</span>
-                            <a href="${readLink}" target="_blank" class="btn-outline">Read Paper <span>↗</span></a>
+                            <a href="${readLink}" target="_blank" class="btn-outline">Read Paper <span>â†—</span></a>
                         </div>
                     `;
                     
@@ -627,3 +627,4 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
 });
+

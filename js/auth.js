@@ -6,7 +6,8 @@ import {
   signOut,
   GoogleAuthProvider,
   signInWithPopup,
-  sendEmailVerification
+  sendEmailVerification,
+  sendPasswordResetEmail
 } from "https://www.gstatic.com/firebasejs/10.7.0/firebase-auth.js";
 import { doc, getDoc } from "https://www.gstatic.com/firebasejs/10.7.0/firebase-firestore.js";
 
@@ -28,10 +29,19 @@ const modalHTML = `
     <div class="auth-form-group">
       <label>Password</label>
       <input type="password" id="auth-password" placeholder="••••••••" class="glass-input">
+      <div id="auth-forgot-container" style="text-align: right; margin-top: 0.5rem;">
+        <a href="#" id="auth-forgot-btn" style="color: var(--accent-cyan); font-size: 0.85rem; text-decoration: none;">Forgot Password?</a>
+      </div>
     </div>
 
-    <p id="auth-error" class="error-text" style="color: #ff6666; font-size: 0.9rem; display: none;"></p>
-    <p id="auth-success" class="success-text" style="color: var(--accent-cyan); font-size: 0.9rem; display: none;"></p>
+    <div id="auth-error" style="display: none; background: rgba(255, 77, 77, 0.1); border: 1px solid rgba(255, 77, 77, 0.3); color: #ff6666; padding: 0.8rem; border-radius: 8px; font-size: 0.9rem; margin-top: 1rem; align-items: flex-start; gap: 0.6rem;">
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="flex-shrink:0; margin-top: 2px;"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="8" x2="12" y2="12"></line><line x1="12" y1="16" x2="12.01" y2="16"></line></svg>
+      <span id="auth-error-text" style="line-height: 1.4;"></span>
+    </div>
+    <div id="auth-success" style="display: none; background: rgba(0, 230, 204, 0.1); border: 1px solid rgba(0, 230, 204, 0.3); color: var(--accent-cyan); padding: 0.8rem; border-radius: 8px; font-size: 0.9rem; margin-top: 1rem; align-items: flex-start; gap: 0.6rem;">
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="flex-shrink:0; margin-top: 2px;"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path><polyline points="22 4 12 14.01 9 11.01"></polyline></svg>
+      <span id="auth-success-text" style="line-height: 1.4;"></span>
+    </div>
 
     <button id="btn-submit-auth" class="btn btn-primary" style="width: 100%; margin-top: 1rem;">Log In</button>
     
@@ -63,11 +73,34 @@ const authSwitchPrompt = document.getElementById('auth-switch-prompt');
 const emailInput = document.getElementById('auth-email');
 const passwordInput = document.getElementById('auth-password');
 const authError = document.getElementById('auth-error');
+const authErrorText = document.getElementById('auth-error-text');
 const authSuccess = document.getElementById('auth-success');
+const authSuccessText = document.getElementById('auth-success-text');
+const authForgotContainer = document.getElementById('auth-forgot-container');
+const btnForgot = document.getElementById('auth-forgot-btn');
 
 const googleProvider = new GoogleAuthProvider();
 
 let isLoginMode = true;
+
+function getFriendlyErrorMessage(error) {
+  const code = error.code || '';
+  if (code === 'auth/invalid-credential' || code === 'auth/user-not-found' || code === 'auth/wrong-password') {
+    return 'Invalid email or password. Please try again.';
+  }
+  if (code === 'auth/email-already-in-use') return 'An account already exists with this email address.';
+  if (code === 'auth/weak-password') return 'Your password is too weak. Please use a stronger password.';
+  if (code === 'auth/invalid-email') return 'The email address is not valid.';
+  if (code === 'auth/too-many-requests') return 'Too many failed attempts. Please try again later.';
+  if (code === 'auth/network-request-failed') return 'Network error. Please check your internet connection.';
+  
+  // Strip the "Firebase: " prefix from unknown errors for a cleaner look
+  let msg = error.message || 'An unknown error occurred.';
+  if (msg.startsWith('Firebase: ')) {
+    msg = msg.replace('Firebase: ', '');
+  }
+  return msg;
+}
 
 export function openAuthModal() {
   authError.style.display = 'none';
@@ -79,6 +112,18 @@ function closeAuthModal() {
   authModal.style.display = 'none';
   emailInput.value = '';
   passwordInput.value = '';
+}
+
+function showAuthError(message) {
+  authErrorText.innerText = message;
+  authError.style.display = 'flex';
+  authSuccess.style.display = 'none';
+}
+
+function showAuthSuccess(message) {
+  authSuccessText.innerText = message;
+  authSuccess.style.display = 'flex';
+  authError.style.display = 'none';
 }
 
 btnCloseModal.addEventListener('click', closeAuthModal);
@@ -102,12 +147,33 @@ authSwitchBtn.addEventListener('click', (e) => {
     btnSubmitAuth.innerText = 'Log In';
     authSwitchPrompt.innerText = "Don't have an account?";
     authSwitchBtn.innerText = 'Sign Up';
+    authForgotContainer.style.display = 'block';
   } else {
     authTitle.innerText = 'Create Account';
     authSubtitle.innerText = 'Join the HydrogenHub research community.';
     btnSubmitAuth.innerText = 'Sign Up';
     authSwitchPrompt.innerText = "Already have an account?";
     authSwitchBtn.innerText = 'Log In';
+    authForgotContainer.style.display = 'none';
+  }
+});
+
+btnForgot.addEventListener('click', async (e) => {
+  e.preventDefault();
+  const email = emailInput.value.trim();
+  if (!email) {
+    showAuthError("Please enter your email address first.");
+    return;
+  }
+  
+  btnForgot.innerText = 'Sending...';
+  try {
+    await sendPasswordResetEmail(auth, email);
+    showAuthSuccess("Password reset email sent! Check your inbox.");
+  } catch (error) {
+    showAuthError(getFriendlyErrorMessage(error));
+  } finally {
+    btnForgot.innerText = 'Forgot Password?';
   }
 });
 
@@ -116,8 +182,7 @@ authSwitchBtn.addEventListener('click', (e) => {
 async function checkProfileAndRedirect(user) {
   // Enforce Email Verification
   if (!user.emailVerified) {
-    authError.innerText = "Please verify your email before continuing. Check your inbox for the link.";
-    authError.style.display = 'block';
+    showAuthError("Please verify your email before continuing. Check your inbox for the link.");
     await signOut(auth); // Log them out to prevent bypass
     return;
   }
@@ -157,52 +222,63 @@ async function checkProfileAndRedirect(user) {
 });
 
 btnSubmitAuth.addEventListener('click', async () => {
-  const email = emailInput.value.trim();
-  const password = passwordInput.value;
-  
-  if (!email || !password) {
-    authError.innerText = "Please enter both email and password.";
-    authError.style.display = 'block';
-    return;
-  }
-  
-  try {
-    btnSubmitAuth.disabled = true;
-    authError.style.display = 'none';
-    authSuccess.style.display = 'none';
+    const email = emailInput.value.trim();
+    const password = passwordInput.value;
 
-    if (isLoginMode) {
-      const userCred = await signInWithEmailAndPassword(auth, email, password);
-      await checkProfileAndRedirect(userCred.user);
-    } else {
-      const userCred = await createUserWithEmailAndPassword(auth, email, password);
-      await sendEmailVerification(userCred.user);
-      authSuccess.innerText = "Verification email sent! Please check your inbox.";
-      authSuccess.style.display = 'block';
-      await checkProfileAndRedirect(userCred.user);
+    if (!email || !password) {
+      showAuthError('Please fill in all fields.');
+      return;
     }
-  } catch (error) {
-    console.error("Auth Error:", error);
-    authError.innerText = error.message.replace('Firebase: ', '');
-    authError.style.display = 'block';
-  } finally {
-    btnSubmitAuth.disabled = false;
-  }
+
+    btnSubmitAuth.disabled = true;
+    btnSubmitAuth.innerText = 'Loading...';
+
+    try {
+      if (isLoginMode) {
+        const userCred = await signInWithEmailAndPassword(auth, email, password);
+        await checkProfileAndRedirect(userCred.user);
+      } else {
+        const userCredential = await createUserWithEmailAndPassword(auth, email, password);
+        const user = userCredential.user;
+        
+        await sendEmailVerification(user);
+        
+        showAuthSuccess("Verification email sent! Please check your inbox and verify your email, then log in.");
+        
+        // Switch to login mode automatically
+        isLoginMode = true;
+        authTitle.innerText = 'Welcome Back';
+        authSubtitle.innerText = 'Log in to upload and manage your research.';
+        btnSubmitAuth.innerText = 'Log In';
+        authSwitchPrompt.innerText = "Don't have an account?";
+        authSwitchBtn.innerText = 'Sign Up';
+        authForgotContainer.style.display = 'block';
+        passwordInput.value = '';
+      }
+    } catch (error) {
+      console.error("Auth Error:", error);
+      showAuthError(getFriendlyErrorMessage(error));
+    } finally {
+      btnSubmitAuth.disabled = false;
+      btnSubmitAuth.innerText = isLoginMode ? 'Log In' : 'Sign Up';
+    }
 });
 
 btnGoogleAuth.addEventListener('click', async () => {
-  try {
     btnGoogleAuth.disabled = true;
-    authError.style.display = 'none';
-    const userCred = await signInWithPopup(auth, googleProvider);
-    await checkProfileAndRedirect(userCred.user);
-  } catch (error) {
-    console.error("Google Auth Error:", error);
-    authError.innerText = error.message.replace('Firebase: ', '');
-    authError.style.display = 'block';
-  } finally {
-    btnGoogleAuth.disabled = false;
-  }
+    const originalText = btnGoogleAuth.innerHTML;
+    btnGoogleAuth.innerHTML = 'Connecting...';
+    
+    try {
+      const userCred = await signInWithPopup(auth, googleProvider);
+      await checkProfileAndRedirect(userCred.user);
+    } catch (error) {
+      console.error("Google Auth Error:", error);
+      showAuthError(getFriendlyErrorMessage(error));
+    } finally {
+      btnGoogleAuth.disabled = false;
+      btnGoogleAuth.innerHTML = originalText;
+    }
 });
 
 // --- NAVBAR UPDATE LOGIC ---
