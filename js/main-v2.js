@@ -1,4 +1,4 @@
-﻿if ('scrollRestoration' in history) {
+if ('scrollRestoration' in history) {
     history.scrollRestoration = 'manual';
 }
 
@@ -216,7 +216,7 @@ document.addEventListener('DOMContentLoaded', () => {
                     <span class="news-date">${item.date}</span>
                     <h3 class="news-title">${item.title}</h3>
                     <p class="news-desc">${item.desc}</p>
-                    <a href="${item.link}" target="_blank" class="read-more">Read Full Story <span>â†’</span></a>
+                    <a href="${item.link}" target="_blank" class="read-more">Read Full Story <span>&rarr;</span></a>
                 </div>
             `;
             
